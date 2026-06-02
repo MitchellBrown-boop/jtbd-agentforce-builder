@@ -295,8 +295,16 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
         <div className="divide-y">
           {appState.jobs.filter(job => job.jobType === 'micro').map((job) => {
             const persona = appState.personas.find(p => p.id === job.persona);
+            const isExample = ['sarah-chen', 'marcus-rodriguez', 'alex-kim'].includes(job.persona);
             return (
-              <div key={job.id} className="p-6 hover:bg-gray-50">
+              <div key={job.id} className="p-6 hover:bg-gray-50 relative">
+                {isExample && (
+                  <div className="absolute top-4 right-4">
+                    <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200 rounded">
+                      EXAMPLE
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-start justify-between">
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center space-x-3">

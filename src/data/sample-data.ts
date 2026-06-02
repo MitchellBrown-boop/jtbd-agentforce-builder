@@ -8,7 +8,7 @@ import { Persona, JTBDJob, AgentOpportunity, LearningModule } from '@/lib/types'
 export const defaultPersonas: Persona[] = [
   {
     id: 'sarah-chen',
-    name: 'Example: Sarah Chen',
+    name: 'Customer Support Manager',
     role: 'Customer Support Manager',
     description: 'Customer support leader at a mid-market tech company managing support operations across multiple channels and working to improve customer experience through automation.',
     responsibilities: [
@@ -35,7 +35,7 @@ export const defaultPersonas: Persona[] = [
   },
   {
     id: 'marcus-rodriguez',
-    name: 'Example: Marcus Rodriguez',
+    name: 'Sales Development Representative',
     role: 'Sales Development Representative',
     description: 'SDR at a fast-growing tech startup focused on qualifying inbound leads and researching prospects for outbound campaigns.',
     responsibilities: [
@@ -62,7 +62,7 @@ export const defaultPersonas: Persona[] = [
   },
   {
     id: 'alex-kim',
-    name: 'Example: Alex Kim',
+    name: 'Engineering Manager',
     role: 'Engineering Manager',
     description: 'Engineering leader at a React-first tech company managing development workflows and looking to integrate business data without leaving developer tools.',
     responsibilities: [
@@ -93,7 +93,7 @@ export const defaultPersonas: Persona[] = [
 export const sampleJobs: JTBDJob[] = [
   {
     id: 'customer-inquiry-deflection',
-    statement: 'Example: Respond to common customer product questions and technical inquiries instantly to avoid creating support tickets',
+    statement: 'Respond to common customer product questions and technical inquiries instantly to avoid creating support tickets',
     jobType: 'micro',
     persona: 'sarah-chen',
     painPoints: [
@@ -122,7 +122,7 @@ export const sampleJobs: JTBDJob[] = [
   },
   {
     id: 'prospect-research-preparation',
-    statement: 'Example: Research prospect company context, stakeholders, and technical requirements before discovery calls',
+    statement: 'Research prospect company context, stakeholders, and technical requirements before discovery calls',
     jobType: 'micro',
     persona: 'marcus-rodriguez',
     painPoints: [
@@ -151,7 +151,7 @@ export const sampleJobs: JTBDJob[] = [
   },
   {
     id: 'slack-data-access',
-    statement: 'Example: Access customer data and update opportunity information directly from Slack during engineering discussions',
+    statement: 'Access customer data and update opportunity information directly from Slack during engineering discussions',
     jobType: 'micro',
     persona: 'alex-kim',
     painPoints: [
@@ -180,7 +180,7 @@ export const sampleJobs: JTBDJob[] = [
   },
   {
     id: 'react-salesforce-integration',
-    statement: 'Example: Build customer-facing experiences using React components without rewriting everything in Lightning Web Components',
+    statement: 'Build customer-facing experiences using React components without rewriting everything in Lightning Web Components',
     jobType: 'micro',
     persona: 'alex-kim',
     painPoints: [
@@ -207,7 +207,7 @@ export const sampleJobs: JTBDJob[] = [
   },
   {
     id: 'lead-qualification-scoring',
-    statement: 'Example: Evaluate inbound leads and score them based on qualification criteria to prioritize follow-up activities',
+    statement: 'Evaluate inbound leads and score them based on qualification criteria to prioritize follow-up activities',
     jobType: 'micro',
     persona: 'marcus-rodriguez',
     painPoints: [
@@ -234,7 +234,7 @@ export const sampleJobs: JTBDJob[] = [
   },
   {
     id: 'meeting-scheduling-coordination',
-    statement: 'Example: Schedule and coordinate discovery calls with prospects while considering stakeholder availability and preferences',
+    statement: 'Schedule and coordinate discovery calls with prospects while considering stakeholder availability and preferences',
     jobType: 'micro',
     persona: 'marcus-rodriguez',
     painPoints: [
