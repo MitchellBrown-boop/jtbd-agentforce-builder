@@ -18,7 +18,7 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
   const [expandedJobs, setExpandedJobs] = useState<Set<string>>(new Set());
   const [jobFormData, setJobFormData] = useState({
     statement: '',
-    jobType: 'micro' as JTBDJob['jobType'],
+    jobType: 'micro' as JTBDJob['jobType'], // All jobs created are micro jobs within larger contexts
     persona: '',
     painPoints: [''],
     successMetrics: [''],
@@ -43,7 +43,7 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     const newJob: JTBDJob = {
       id: `job-${Date.now()}`,
       statement: jobFormData.statement,
-      jobType: jobFormData.jobType,
+      jobType: 'micro', // All jobs created through this form are micro jobs within larger contexts
       persona: jobFormData.persona,
       painPoints: jobFormData.painPoints.filter(p => p.trim()),
       successMetrics: jobFormData.successMetrics.filter(m => m.trim()),
@@ -93,7 +93,7 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     const updatedJob: JTBDJob = {
       ...editingJob,
       statement: jobFormData.statement,
-      jobType: jobFormData.jobType,
+      jobType: 'micro', // All jobs are micro jobs within larger contexts
       persona: jobFormData.persona,
       painPoints: jobFormData.painPoints.filter(p => p.trim()),
       successMetrics: jobFormData.successMetrics.filter(m => m.trim()),
@@ -409,74 +409,63 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
             />
           </div>
 
-          {/* Job Type and Lifecycle */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Job Type *</label>
-              <select
-                value={jobFormData.jobType}
-                onChange={(e) => setJobFormData(prev => ({ ...prev, jobType: e.target.value as JTBDJob['jobType'] }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="big">Big Job</option>
-                <option value="little">Little Job</option>
-                <option value="micro">Micro Job</option>
-              </select>
+          {/* Job Hierarchy */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <Target className="w-5 h-5 text-blue-600" />
+              <h3 className="font-semibold text-blue-900">Job Hierarchy</h3>
+              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Define the complete job context</span>
             </div>
 
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Big Job - High-level outcome this supports
+                </label>
+                <input
+                  value={jobFormData.bigJobContext}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, bigJobContext: e.target.value }))}
+                  placeholder="e.g., Deliver exceptional customer support experience while scaling efficiently"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
-              <select
-                value={jobFormData.persona}
-                onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select persona...</option>
-                {appState.personas.map(persona => (
-                  <option key={persona.id} value={persona.id}>{persona.name}</option>
-                ))}
-              </select>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Little Job - Component task this is part of
+                </label>
+                <input
+                  value={jobFormData.littleJobContext}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, littleJobContext: e.target.value }))}
+                  placeholder="e.g., Process and respond to customer inquiries efficiently"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="bg-white border border-blue-300 rounded p-3">
+                <label className="block text-sm font-medium text-blue-700 mb-1">
+                  Micro Job - Specific task (your job statement above)
+                </label>
+                <p className="text-sm text-blue-600">This is the specific job statement you defined above</p>
+              </div>
             </div>
           </div>
 
-          {/* Job Hierarchy Context - Only show for Micro Jobs */}
-          {jobFormData.jobType === 'micro' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
-              <div className="flex items-center space-x-2 mb-4">
-                <Target className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-blue-900">Job Hierarchy Context</h3>
-              </div>
+          {/* Persona Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
+            <select
+              value={jobFormData.persona}
+              onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select persona...</option>
+              {appState.personas.map(persona => (
+                <option key={persona.id} value={persona.id}>{persona.name}</option>
+              ))}
+            </select>
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Big Job Context
-                  <span className="text-xs text-gray-500 ml-1">(What complete outcome does this micro job support?)</span>
-                </label>
-                <textarea
-                  value={jobFormData.bigJobContext}
-                  onChange={(e) => setJobFormData(prev => ({ ...prev, bigJobContext: e.target.value }))}
-                  placeholder="e.g., Monitor and optimize customer search performance to ensure ongoing success"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={2}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Little Job Context
-                  <span className="text-xs text-gray-500 ml-1">(What workflow step is this micro job part of?)</span>
-                </label>
-                <textarea
-                  value={jobFormData.littleJobContext}
-                  onChange={(e) => setJobFormData(prev => ({ ...prev, littleJobContext: e.target.value }))}
-                  placeholder="e.g., When reviewing customer health, I want to quickly identify performance trends and issues"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={2}
-                />
-              </div>
-            </div>
-          )}
 
           {/* Pain Points */}
           <div>
@@ -625,34 +614,61 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
             />
           </div>
 
-          {/* Job Type and Lifecycle */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Job Type *</label>
-              <select
-                value={jobFormData.jobType}
-                onChange={(e) => setJobFormData(prev => ({ ...prev, jobType: e.target.value as JTBDJob['jobType'] }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="big">Big Job</option>
-                <option value="little">Little Job</option>
-                <option value="micro">Micro Job</option>
-              </select>
+          {/* Job Hierarchy */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <Target className="w-5 h-5 text-blue-600" />
+              <h3 className="font-semibold text-blue-900">Job Hierarchy</h3>
+              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Define the complete job context</span>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
-              <select
-                value={jobFormData.persona}
-                onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select persona...</option>
-                {appState.personas.map(persona => (
-                  <option key={persona.id} value={persona.id}>{persona.name}</option>
-                ))}
-              </select>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Big Job - High-level outcome this supports
+                </label>
+                <input
+                  value={jobFormData.bigJobContext}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, bigJobContext: e.target.value }))}
+                  placeholder="e.g., Deliver exceptional customer support experience while scaling efficiently"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Little Job - Component task this is part of
+                </label>
+                <input
+                  value={jobFormData.littleJobContext}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, littleJobContext: e.target.value }))}
+                  placeholder="e.g., Process and respond to customer inquiries efficiently"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="bg-white border border-blue-300 rounded p-3">
+                <label className="block text-sm font-medium text-blue-700 mb-1">
+                  Micro Job - Specific task (your job statement above)
+                </label>
+                <p className="text-sm text-blue-600">This is the specific job statement you defined above</p>
+              </div>
             </div>
+          </div>
+
+          {/* Persona Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
+            <select
+              value={jobFormData.persona}
+              onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select persona...</option>
+              {appState.personas.map(persona => (
+                <option key={persona.id} value={persona.id}>{persona.name}</option>
+              ))}
+            </select>
           </div>
 
           {/* Pain Points */}
@@ -766,29 +782,6 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
             </div>
           </div>
 
-          {/* Context Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Big Job Context</label>
-              <textarea
-                value={jobFormData.bigJobContext}
-                onChange={(e) => setJobFormData(prev => ({ ...prev, bigJobContext: e.target.value }))}
-                placeholder="What is the larger job this supports?"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Little Job Context</label>
-              <textarea
-                value={jobFormData.littleJobContext}
-                onChange={(e) => setJobFormData(prev => ({ ...prev, littleJobContext: e.target.value }))}
-                placeholder="What smaller job is this part of?"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={2}
-              />
-            </div>
-          </div>
         </div>
 
         {/* Submit Section */}
