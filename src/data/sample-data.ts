@@ -115,6 +115,8 @@ export const sampleJobs: JTBDJob[] = [
     ],
     bigJobContext: 'Provide exceptional customer support experience while scaling efficiently with company growth',
     littleJobContext: 'When customers have product questions, I want them to get instant, accurate answers without creating tickets',
+    timePerOccurrence: 5,
+    frequency: 'daily',
     createdAt: new Date('2026-06-02'),
     updatedAt: new Date('2026-06-02')
   },
@@ -142,6 +144,8 @@ export const sampleJobs: JTBDJob[] = [
     ],
     bigJobContext: 'Maximize qualified pipeline generation through efficient prospect research and preparation',
     littleJobContext: 'When preparing for prospect calls, I want comprehensive company and stakeholder insights quickly',
+    timePerOccurrence: 20,
+    frequency: 'daily',
     createdAt: new Date('2026-06-02'),
     updatedAt: new Date('2026-06-02')
   },
@@ -169,6 +173,8 @@ export const sampleJobs: JTBDJob[] = [
     ],
     bigJobContext: 'Maintain engineering productivity while incorporating customer business context into technical decisions',
     littleJobContext: 'When discussing technical features, I want instant access to customer data without leaving Slack',
+    timePerOccurrence: 10,
+    frequency: 'as-needed',
     createdAt: new Date('2026-06-02'),
     updatedAt: new Date('2026-06-02')
   },

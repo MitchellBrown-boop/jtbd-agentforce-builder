@@ -24,7 +24,20 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     successMetrics: [''],
     currentSolutions: [''],
     bigJobContext: '',
-    littleJobContext: ''
+    littleJobContext: '',
+    timePerOccurrence: undefined as number | undefined,
+    frequency: undefined as 'daily' | 'weekly' | 'monthly' | 'as-needed' | undefined
+  });
+
+  const [showPersonaCreator, setShowPersonaCreator] = useState(false);
+  const [newPersonaData, setNewPersonaData] = useState({
+    name: '',
+    role: '',
+    description: '',
+    responsibilities: [''],
+    painPoints: [''],
+    tools: [''],
+    goals: ['']
   });
 
   const toggleJobExpansion = (jobId: string) => {
@@ -39,6 +52,38 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     });
   };
 
+  const handleCreatePersona = () => {
+    const newPersona: Persona = {
+      id: `persona-${Date.now()}`,
+      name: newPersonaData.name,
+      role: newPersonaData.role,
+      description: newPersonaData.description,
+      responsibilities: newPersonaData.responsibilities.filter(r => r.trim()),
+      painPoints: newPersonaData.painPoints.filter(p => p.trim()),
+      tools: newPersonaData.tools.filter(t => t.trim()),
+      goals: newPersonaData.goals.filter(g => g.trim())
+    };
+
+    updateAppState({
+      personas: [...appState.personas, newPersona]
+    });
+
+    // Select the newly created persona
+    setJobFormData(prev => ({ ...prev, persona: newPersona.id }));
+
+    // Reset persona form and close creator
+    setNewPersonaData({
+      name: '',
+      role: '',
+      description: '',
+      responsibilities: [''],
+      painPoints: [''],
+      tools: [''],
+      goals: ['']
+    });
+    setShowPersonaCreator(false);
+  };
+
   const handleCreateJob = () => {
     const newJob: JTBDJob = {
       id: `job-${Date.now()}`,
@@ -50,6 +95,8 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
       currentSolutions: jobFormData.currentSolutions.filter(s => s.trim()),
       bigJobContext: jobFormData.bigJobContext || undefined,
       littleJobContext: jobFormData.littleJobContext || undefined,
+      timePerOccurrence: jobFormData.timePerOccurrence || undefined,
+      frequency: jobFormData.frequency || undefined,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -67,7 +114,9 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
       successMetrics: [''],
       currentSolutions: [''],
       bigJobContext: '',
-      littleJobContext: ''
+      littleJobContext: '',
+      timePerOccurrence: undefined,
+      frequency: undefined
     });
     setActiveView('overview');
   };
@@ -82,7 +131,9 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
       successMetrics: job.successMetrics.length > 0 ? job.successMetrics : [''],
       currentSolutions: job.currentSolutions.length > 0 ? job.currentSolutions : [''],
       bigJobContext: job.bigJobContext || '',
-      littleJobContext: job.littleJobContext || ''
+      littleJobContext: job.littleJobContext || '',
+      timePerOccurrence: job.timePerOccurrence || undefined,
+      frequency: job.frequency || undefined
     });
     setActiveView('edit-job');
   };
@@ -100,6 +151,8 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
       currentSolutions: jobFormData.currentSolutions.filter(s => s.trim()),
       bigJobContext: jobFormData.bigJobContext || undefined,
       littleJobContext: jobFormData.littleJobContext || undefined,
+      timePerOccurrence: jobFormData.timePerOccurrence || undefined,
+      frequency: jobFormData.frequency || undefined,
       updatedAt: new Date()
     };
 
@@ -118,7 +171,9 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
       successMetrics: [''],
       currentSolutions: [''],
       bigJobContext: '',
-      littleJobContext: ''
+      littleJobContext: '',
+      timePerOccurrence: undefined,
+      frequency: undefined
     });
 
     setEditingJob(null);
@@ -454,18 +509,162 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
           {/* Persona Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
-            <select
-              value={jobFormData.persona}
-              onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Select persona...</option>
-              {appState.personas.map(persona => (
-                <option key={persona.id} value={persona.id}>{persona.name}</option>
-              ))}
-            </select>
+            <div className="flex space-x-2">
+              <select
+                value={jobFormData.persona}
+                onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Select role...</option>
+                {appState.personas.map(persona => (
+                  <option key={persona.id} value={persona.id}>{persona.role}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowPersonaCreator(true)}
+                className="px-4 py-2 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 flex items-center space-x-1"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Role</span>
+              </button>
+            </div>
+
+            {/* Inline Persona Creator */}
+            {showPersonaCreator && (
+              <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-gray-900">Add New Persona</h4>
+                  <button
+                    type="button"
+                    onClick={() => setShowPersonaCreator(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
+                    <input
+                      value={newPersonaData.name}
+                      onChange={(e) => setNewPersonaData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="e.g., Sarah Chen"
+                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Role *</label>
+                    <input
+                      value={newPersonaData.role}
+                      onChange={(e) => setNewPersonaData(prev => ({ ...prev, role: e.target.value }))}
+                      placeholder="e.g., Customer Support Manager"
+                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+                  <textarea
+                    value={newPersonaData.description}
+                    onChange={(e) => setNewPersonaData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Brief description of this role and responsibilities..."
+                    rows={2}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowPersonaCreator(false)}
+                    className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCreatePersona}
+                    disabled={!newPersonaData.name || !newPersonaData.role}
+                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    Add Persona
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Time & Frequency Tracking */}
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <Target className="w-5 h-5 text-orange-600" />
+              <h3 className="font-semibold text-orange-900">Time Impact Analysis</h3>
+              <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">Helps prioritize automation opportunities</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Time per occurrence (minutes)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={jobFormData.timePerOccurrence || ''}
+                  onChange={(e) => setJobFormData(prev => ({
+                    ...prev,
+                    timePerOccurrence: e.target.value ? parseInt(e.target.value) : undefined
+                  }))}
+                  placeholder="e.g., 15"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">How long does this task typically take?</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Frequency
+                </label>
+                <select
+                  value={jobFormData.frequency || ''}
+                  onChange={(e) => setJobFormData(prev => ({
+                    ...prev,
+                    frequency: e.target.value as any || undefined
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select frequency...</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="as-needed">As needed</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">How often does this job occur?</p>
+              </div>
+            </div>
+
+            {jobFormData.timePerOccurrence && jobFormData.frequency && (
+              <div className="bg-white border border-orange-300 rounded p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-orange-800">Estimated Weekly Impact:</span>
+                  <span className="text-lg font-bold text-orange-600">
+                    {(() => {
+                      const timePerWeek =
+                        jobFormData.frequency === 'daily' ? jobFormData.timePerOccurrence * 5 :
+                        jobFormData.frequency === 'weekly' ? jobFormData.timePerOccurrence :
+                        jobFormData.frequency === 'monthly' ? jobFormData.timePerOccurrence / 4 :
+                        jobFormData.timePerOccurrence; // as-needed, assume weekly
+                      return `${Math.round(timePerWeek)} minutes/week`;
+                    })()}
+                  </span>
+                </div>
+                <p className="text-xs text-orange-600 mt-1">High-impact jobs are prime candidates for agent automation</p>
+              </div>
+            )}
+          </div>
 
           {/* Pain Points */}
           <div>
@@ -659,16 +858,95 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
           {/* Persona Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
-            <select
-              value={jobFormData.persona}
-              onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Select persona...</option>
-              {appState.personas.map(persona => (
-                <option key={persona.id} value={persona.id}>{persona.name}</option>
-              ))}
-            </select>
+            <div className="flex space-x-2">
+              <select
+                value={jobFormData.persona}
+                onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Select role...</option>
+                {appState.personas.map(persona => (
+                  <option key={persona.id} value={persona.id}>{persona.role}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowPersonaCreator(true)}
+                className="px-4 py-2 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 flex items-center space-x-1"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Role</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Time & Frequency Tracking */}
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <Target className="w-5 h-5 text-orange-600" />
+              <h3 className="font-semibold text-orange-900">Time Impact Analysis</h3>
+              <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">Helps prioritize automation opportunities</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Time per occurrence (minutes)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={jobFormData.timePerOccurrence || ''}
+                  onChange={(e) => setJobFormData(prev => ({
+                    ...prev,
+                    timePerOccurrence: e.target.value ? parseInt(e.target.value) : undefined
+                  }))}
+                  placeholder="e.g., 15"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">How long does this task typically take?</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Frequency
+                </label>
+                <select
+                  value={jobFormData.frequency || ''}
+                  onChange={(e) => setJobFormData(prev => ({
+                    ...prev,
+                    frequency: e.target.value as any || undefined
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select frequency...</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="as-needed">As needed</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">How often does this job occur?</p>
+              </div>
+            </div>
+
+            {jobFormData.timePerOccurrence && jobFormData.frequency && (
+              <div className="bg-white border border-orange-300 rounded p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-orange-800">Estimated Weekly Impact:</span>
+                  <span className="text-lg font-bold text-orange-600">
+                    {(() => {
+                      const timePerWeek =
+                        jobFormData.frequency === 'daily' ? jobFormData.timePerOccurrence * 5 :
+                        jobFormData.frequency === 'weekly' ? jobFormData.timePerOccurrence :
+                        jobFormData.frequency === 'monthly' ? jobFormData.timePerOccurrence / 4 :
+                        jobFormData.timePerOccurrence; // as-needed, assume weekly
+                      return `${Math.round(timePerWeek)} minutes/week`;
+                    })()}
+                  </span>
+                </div>
+                <p className="text-xs text-orange-600 mt-1">High-impact jobs are prime candidates for agent automation</p>
+              </div>
+            )}
           </div>
 
           {/* Pain Points */}
@@ -797,7 +1075,9 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
                 successMetrics: [''],
                 currentSolutions: [''],
                 bigJobContext: '',
-                littleJobContext: ''
+                littleJobContext: '',
+                timePerOccurrence: undefined,
+                frequency: undefined
               });
               setActiveView('overview');
             }}

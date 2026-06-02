@@ -10,6 +10,8 @@ export interface JTBDJob {
   agentOpportunity?: AgentOpportunity;
   bigJobContext?: string; // For micro jobs, shows the Big Job they support
   littleJobContext?: string; // For micro jobs, shows the Little Job they're part of
+  timePerOccurrence?: number; // Minutes spent per occurrence
+  frequency?: 'daily' | 'weekly' | 'monthly' | 'as-needed'; // How often this job occurs
   createdAt: Date;
   updatedAt: Date;
 }
