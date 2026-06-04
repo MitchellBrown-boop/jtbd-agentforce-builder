@@ -17,13 +17,15 @@ async function getGoogleAuth() {
         credentials,
         scopes
       });
-      return auth;
+      const authClient = await auth.getClient();
+      return authClient;
     } else {
       // Development: Use application default credentials (gcloud auth)
       const auth = new google.auth.GoogleAuth({
         scopes
       });
-      return auth;
+      const authClient = await auth.getClient();
+      return authClient;
     }
   } catch (error) {
     console.error('Failed to initialize Google Auth:', error);
@@ -47,8 +49,8 @@ export async function POST(request: NextRequest) {
     console.log(`Rows: ${data.length}, Columns: ${data[0]?.length || 0}`);
 
     // Initialize Google Sheets API
-    const auth = await getGoogleAuth();
-    const sheets = google.sheets({ version: 'v4', auth });
+    const authClient = await getGoogleAuth();
+    const sheets = google.sheets({ version: 'v4', auth: authClient as any });
 
     // Calculate the range based on data dimensions
     const numRows = data.length;

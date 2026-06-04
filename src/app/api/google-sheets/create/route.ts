@@ -17,13 +17,15 @@ async function getGoogleAuth() {
         credentials,
         scopes
       });
-      return auth;
+      const authClient = await auth.getClient();
+      return authClient;
     } else {
       // Development: Use application default credentials (gcloud auth)
       const auth = new google.auth.GoogleAuth({
         scopes
       });
-      return auth;
+      const authClient = await auth.getClient();
+      return authClient;
     }
   } catch (error) {
     console.error('Failed to initialize Google Auth:', error);
@@ -67,9 +69,9 @@ export async function POST(request: NextRequest) {
     const { title, sheet_names } = await request.json();
 
     // Initialize Google APIs
-    const auth = await getGoogleAuth();
-    const drive = google.drive({ version: 'v3', auth });
-    const sheets = google.sheets({ version: 'v4', auth });
+    const authClient = await getGoogleAuth();
+    const drive = google.drive({ version: 'v3', auth: authClient as any });
+    const sheets = google.sheets({ version: 'v4', auth: authClient as any });
 
     // Create folder structure: FY27/Algolia/JTBD
     console.log('Creating folder structure...');
