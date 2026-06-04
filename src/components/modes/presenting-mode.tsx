@@ -10,7 +10,7 @@ interface PresentingModeProps {
 }
 
 export default function PresentingMode({ appState }: PresentingModeProps) {
-  const [viewMode, setViewMode] = useState<'executive' | 'detailed' | 'technical'>('executive');
+  const [viewMode, setViewMode] = useState<'executive' | 'technical'>('executive');
 
   const jobsByType = appState.jobs.reduce((acc, job) => {
     acc[job.jobType] = (acc[job.jobType] || 0) + 1;
@@ -242,7 +242,6 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
       <div className="mb-8 flex space-x-4 bg-white rounded-lg border p-2">
         {[
           { mode: 'executive', label: 'Executive Summary', icon: TrendingUp },
-          { mode: 'detailed', label: 'Detailed Analysis', icon: BarChart3 },
           { mode: 'technical', label: 'Technical Specs', icon: Target }
         ].map(({ mode, label, icon: Icon }) => (
           <button
@@ -274,14 +273,6 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
 
       {/* Main Content */}
       {viewMode === 'executive' && renderExecutiveDashboard()}
-
-      {viewMode === 'detailed' && (
-        <div className="bg-white rounded-lg border p-8 text-center">
-          <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Detailed Analysis View</h3>
-          <p className="text-gray-600">Coming in Phase 2 - Advanced Features</p>
-        </div>
-      )}
 
       {viewMode === 'technical' && (
         <div className="bg-white rounded-lg border p-8 text-center">
