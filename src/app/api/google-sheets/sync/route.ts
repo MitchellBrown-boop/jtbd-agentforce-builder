@@ -4,32 +4,27 @@ import { google } from 'googleapis';
 // Initialize Google Auth
 async function getGoogleAuth() {
   try {
-    let auth;
+    const scopes = [
+      'https://www.googleapis.com/auth/spreadsheets',
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/drive.file'
+    ];
 
     if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
       // Production: Use service account JSON from environment variable
       const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
-      auth = new google.auth.GoogleAuth({
+      const auth = new google.auth.GoogleAuth({
         credentials,
-        scopes: [
-          'https://www.googleapis.com/auth/spreadsheets',
-          'https://www.googleapis.com/auth/drive',
-          'https://www.googleapis.com/auth/drive.file'
-        ]
+        scopes
       });
+      return auth;
     } else {
       // Development: Use application default credentials (gcloud auth)
-      auth = new google.auth.GoogleAuth({
-        scopes: [
-          'https://www.googleapis.com/auth/spreadsheets',
-          'https://www.googleapis.com/auth/drive',
-          'https://www.googleapis.com/auth/drive.file'
-        ]
+      const auth = new google.auth.GoogleAuth({
+        scopes
       });
+      return auth;
     }
-
-    const authClient = await auth.getClient();
-    return authClient;
   } catch (error) {
     console.error('Failed to initialize Google Auth:', error);
     throw new Error('Google authentication failed');
@@ -52,8 +47,8 @@ export async function POST(request: NextRequest) {
     console.log(`Rows: ${data.length}, Columns: ${data[0]?.length || 0}`);
 
     // Initialize Google Sheets API
-    const authClient = await getGoogleAuth();
-    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    const auth = await getGoogleAuth();
+    const sheets = google.sheets({ version: 'v4', auth });
 
     // Calculate the range based on data dimensions
     const numRows = data.length;
