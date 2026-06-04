@@ -43,21 +43,22 @@
 ### 1. Multi-Customer Deployment Architecture (PLANNING PHASE)
 **Current State**: Plan updated in `/Users/mitchellbrown/.claude/plans/does-this-google-sheet-hashed-rose.md`
 
-**Platform Decision**: Heroku selected over Vercel for multi-customer deployment
-- **Heroku Advantages**: Natural app isolation, config vars for branding, built-in custom domains with SSL
-- **Architecture**: Separate Heroku apps per customer with individual scaling and complete data isolation
-- **Cost Structure**: $7-25/month per customer depending on dyno tier
+**Platform Decision**: Railway selected for multi-customer deployment (Heroku end of sale)
+- **Railway Advantages**: Service isolation, environment variables for branding, built-in custom domains with SSL
+- **Architecture**: Separate Railway services per customer with individual scaling and complete data isolation
+- **Cost Structure**: $5/month per customer service (more cost-effective than alternatives)
 
 **Approach Selected**: Option 1 - Separate Deployments per Customer
-- Individual Heroku apps with custom domains (e.g., `jtbd.customer-domain.com`)
-- Customer-specific config vars for branding and sample data  
+- Individual Railway services with custom domains (e.g., `jtbd.customer-domain.com`)
+- Customer-specific environment variables for branding and sample data  
 - Complete data isolation per customer with dedicated Google Sheets integration
+- GitHub integration for automated deployment from branch commits
 
 **Outstanding Questions** (for morning discussion):
 - Mass entry production method preference (CSV import vs Google Sheets sync vs Templates)
 - Expected volume scale per customer (20-50 vs 50-200 vs 200+ jobs)
 - Existing data migration requirements
-- Heroku dyno tier preference (Hobby $7/mo with sleep vs Basic $25/mo always-on)
+- Alternative free hosting options via Salesforce employee benefits
 
 ### 2. Transcript Processing Feature (INDEXED FOR V2)
 **Current State**: Comprehensive plan completed, implementation deferred
