@@ -204,7 +204,7 @@ export function formatPersonasForSheet(personas: Persona[]): any[][] {
 export function formatAgentOpportunitiesForSheet(opportunities: AgentOpportunity[]): any[][] {
   const headers = [
     'ID', 'Name', 'Description', 'Related Jobs', 'Priority',
-    'Complexity', 'Estimated Impact', 'Technical Requirements', 'Integrations'
+    'Estimated Impact', 'Technical Requirements', 'Integrations'
   ];
 
   const data = opportunities.map(opportunity => [
@@ -213,7 +213,6 @@ export function formatAgentOpportunitiesForSheet(opportunities: AgentOpportunity
     opportunity.description,
     opportunity.jobIds.join(', '),
     opportunity.priority,
-    opportunity.complexity,
     opportunity.estimatedImpact,
     opportunity.technicalRequirements.join('\n• '),
     opportunity.integrations.join(', ')
