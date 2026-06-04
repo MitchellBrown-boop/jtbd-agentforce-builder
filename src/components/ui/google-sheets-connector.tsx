@@ -36,10 +36,20 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
       });
 
       if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 503) {
+          // MCP server not available
+          throw new Error(errorData.message || 'Google Sheets integration requires local development environment');
+        }
         throw new Error(`Failed to create spreadsheet: ${response.statusText}`);
       }
 
       const result = await response.json();
+
+      // Check for MCP unavailability error
+      if (result.error && result.error.includes('MCP')) {
+        throw new Error(result.message || 'Google Sheets integration requires local development environment');
+      }
 
       // Parse the spreadsheet info (MCP returns text, need to extract ID and URL)
       const idMatch = result.data.match(/ID: ([a-zA-Z0-9-_]+)/);
