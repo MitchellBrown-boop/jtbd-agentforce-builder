@@ -188,9 +188,9 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
     try {
       // Filter out example data - only sync user-created content
       // Example data has specific IDs from sample-data.ts
-      const exampleJobIds = ['sarah-pain-points', 'jordan-workflow', 'alex-integrations'];
-      const examplePersonaIds = ['sarah-chen', 'jordan-patel', 'alex-rivera'];
-      const exampleAgentIds = ['cust-svc-agent', 'sales-agent', 'ops-agent', 'analytics-agent', 'integration-agent'];
+      const exampleJobIds = ['customer-inquiry-deflection', 'prospect-research-preparation', 'slack-data-access', 'react-salesforce-integration', 'lead-qualification-scoring', 'meeting-scheduling-coordination'];
+      const examplePersonaIds = ['sarah-chen', 'marcus-rodriguez', 'alex-kim'];
+      const exampleAgentIds = ['customer-support-deflection-agent', 'sdr-research-qualification-agent', 'slack-operations-agent', 'react-development-agent', 'intelligent-scheduling-agent'];
 
       const userJobs = appState.jobs.filter(job => !exampleJobIds.includes(job.id));
       const userPersonas = appState.personas.filter(persona => !examplePersonaIds.includes(persona.id));
@@ -314,9 +314,9 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
 
   if (appState.googleSheetsConnected) {
     // Calculate user-created data counts (excluding examples)
-    const exampleJobIds = ['sarah-pain-points', 'jordan-workflow', 'alex-integrations'];
-    const examplePersonaIds = ['sarah-chen', 'jordan-patel', 'alex-rivera'];
-    const exampleAgentIds = ['cust-svc-agent', 'sales-agent', 'ops-agent', 'analytics-agent', 'integration-agent'];
+    const exampleJobIds = ['customer-inquiry-deflection', 'prospect-research-preparation', 'slack-data-access', 'react-salesforce-integration', 'lead-qualification-scoring', 'meeting-scheduling-coordination'];
+    const examplePersonaIds = ['sarah-chen', 'marcus-rodriguez', 'alex-kim'];
+    const exampleAgentIds = ['customer-support-deflection-agent', 'sdr-research-qualification-agent', 'slack-operations-agent', 'react-development-agent', 'intelligent-scheduling-agent'];
 
     const userJobsCount = appState.jobs.filter(job => !exampleJobIds.includes(job.id)).length;
     const userPersonasCount = appState.personas.filter(persona => !examplePersonaIds.includes(persona.id)).length;
