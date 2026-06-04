@@ -18,7 +18,8 @@ export async function POST(request: NextRequest) {
     const accessToken = await getAccessToken();
 
     if (!accessToken) {
-      throw new Error('Failed to obtain Google API access token');
+      console.error('No access token available - check GOOGLE_SERVICE_ACCOUNT_KEY environment variable');
+      throw new Error('Google Sheets sync unavailable: Missing service account configuration. Please check environment variables.');
     }
 
     // Calculate range for the data
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
 async function getAccessToken(): Promise<string | null> {
   try {
     if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
-      console.log('No service account key found, sync will be simulated');
+      console.error('GOOGLE_SERVICE_ACCOUNT_KEY environment variable not found');
       return null;
     }
 

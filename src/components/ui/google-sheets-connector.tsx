@@ -232,7 +232,15 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to sync ${sheetName} data`);
+      let errorMessage = `Failed to sync ${sheetName} data`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.details || errorData.error || errorMessage;
+      } catch (e) {
+        // If can't parse JSON error, use response status
+        errorMessage = `${errorMessage} (${response.status}: ${response.statusText})`;
+      }
+      throw new Error(errorMessage);
     }
   };
 
