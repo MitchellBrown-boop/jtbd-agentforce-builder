@@ -108,7 +108,6 @@ export class GoogleSheetsService {
       opportunity.description,
       opportunity.jobIds.join('; '),
       opportunity.priority,
-      opportunity.complexity,
       opportunity.estimatedImpact,
       opportunity.technicalRequirements.join('; '),
       opportunity.integrations.join('; ')
