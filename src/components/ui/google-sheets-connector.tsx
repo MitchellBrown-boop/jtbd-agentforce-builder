@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppState, JTBDJob, Persona, AgentOpportunity } from '@/lib/types';
 import { Sheet, ExternalLink, Plus, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { ALGOLIA_CONFIG, isAlgoliaDeployment } from '@/lib/algolia-config';
@@ -20,6 +20,41 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
   const [collaboratorName, setCollaboratorName] = useState('');
   const [collaboratorEmail, setCollaboratorEmail] = useState('');
   const [showCollaboratorForm, setShowCollaboratorForm] = useState(false);
+
+  // Auto-connect for Algolia deployment on component mount
+  useEffect(() => {
+    const autoConnectAlgolia = async () => {
+      // Only auto-connect if not already connected and this is an Algolia deployment
+      if (!appState.googleSheetsConnected &&
+          isAlgoliaDeployment() &&
+          ALGOLIA_CONFIG.GOOGLE_SHEET_ID !== 'PASTE_SPREADSHEET_ID_HERE') {
+
+        console.log('Auto-connecting Algolia deployment...');
+
+        const spreadsheetId = ALGOLIA_CONFIG.GOOGLE_SHEET_ID;
+        const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+
+        setSpreadsheetId(spreadsheetId);
+        setSpreadsheetUrl(spreadsheetUrl);
+        setCollaboratorName(ALGOLIA_CONFIG.COLLABORATOR_NAME);
+        setCollaboratorEmail(ALGOLIA_CONFIG.COLLABORATOR_EMAIL);
+
+        updateAppState({
+          googleSheetsConnected: true,
+          currentWorkshopId: spreadsheetId
+        });
+
+        // Auto-sync initial data
+        try {
+          await syncToSheets(spreadsheetId);
+        } catch (error) {
+          console.log('Initial sync skipped:', error);
+        }
+      }
+    };
+
+    autoConnectAlgolia();
+  }, [appState.googleSheetsConnected]); // Only run when connection status might change
 
   const createNewSpreadsheet = async () => {
     setIsConnecting(true);
