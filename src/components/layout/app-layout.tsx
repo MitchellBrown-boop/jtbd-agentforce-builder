@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // Framer Motion temporarily disabled for debugging
 // import { motion, AnimatePresence } from 'framer-motion';
 import { AppMode, AppState } from '@/lib/types';
@@ -33,6 +33,44 @@ const modeConfig = {
   }
 };
 
+// localStorage key for persisting app state
+const STORAGE_KEY = 'jtbd-builder-app-state';
+
+// Load state from localStorage
+const loadStateFromStorage = (): Partial<AppState> | null => {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Convert date strings back to Date objects
+      if (parsed.jobs) {
+        parsed.jobs = parsed.jobs.map((job: any) => ({
+          ...job,
+          createdAt: job.createdAt ? new Date(job.createdAt) : undefined,
+          updatedAt: job.updatedAt ? new Date(job.updatedAt) : undefined
+        }));
+      }
+      return parsed;
+    }
+  } catch (error) {
+    console.error('Failed to load state from localStorage:', error);
+  }
+  return null;
+};
+
+// Save state to localStorage
+const saveStateToStorage = (state: AppState) => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save state to localStorage:', error);
+  }
+};
+
 export default function AppLayout() {
   const [appState, setAppState] = useState<AppState>({
     currentMode: 'learning',
@@ -42,12 +80,28 @@ export default function AppLayout() {
     googleSheetsConnected: false
   });
 
+  // Load saved state on component mount
+  useEffect(() => {
+    const savedState = loadStateFromStorage();
+    if (savedState) {
+      setAppState(prev => ({ ...prev, ...savedState }));
+    }
+  }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    saveStateToStorage(appState);
+  }, [appState]);
+
   const handleModeChange = (mode: AppMode) => {
     setAppState(prev => ({ ...prev, currentMode: mode }));
   };
 
   const updateAppState = (updates: Partial<AppState>) => {
-    setAppState(prev => ({ ...prev, ...updates }));
+    setAppState(prev => {
+      const newState = { ...prev, ...updates };
+      return newState;
+    });
   };
 
   const renderCurrentMode = () => {
