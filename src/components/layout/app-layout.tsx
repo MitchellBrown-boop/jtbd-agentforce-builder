@@ -5,7 +5,7 @@ import { useState } from 'react';
 // import { motion, AnimatePresence } from 'framer-motion';
 import { AppMode, AppState } from '@/lib/types';
 import { defaultPersonas, sampleJobs, sampleAgentOpportunities } from '@/data/sample-data';
-import { appConfig } from '@/lib/config';
+import { appConfig, customerConfig } from '@/lib/config';
 import ModeNavigation from './mode-navigation';
 import LearningMode from '@/components/modes/learning-mode';
 import BuildingMode from '@/components/modes/building-mode';
