@@ -328,18 +328,6 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
           </div>
 
           <div className="flex items-center space-x-2">
-            {spreadsheetUrl && (
-              <a
-                href={spreadsheetUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-1 px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                <ExternalLink className="w-3 h-3" />
-                <span>Open Sheet</span>
-              </a>
-            )}
-
             <button
               onClick={() => syncToSheets()}
               disabled={isSyncing}
