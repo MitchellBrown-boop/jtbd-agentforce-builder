@@ -202,21 +202,15 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
         agents: userAgents.length
       });
 
-      // Sync only user-created data
-      if (userJobs.length > 0) {
-        const jobsData = formatJobsForSheets(userJobs);
-        await syncSheetData(targetId, 'Jobs Framework', jobsData);
-      }
+      // Always sync headers, even if no user data yet
+      const jobsData = formatJobsForSheets(userJobs);
+      await syncSheetData(targetId, 'Jobs Framework', jobsData);
 
-      if (userPersonas.length > 0) {
-        const personasData = formatPersonasForSheets(userPersonas);
-        await syncSheetData(targetId, 'Personas', personasData);
-      }
+      const personasData = formatPersonasForSheets(userPersonas);
+      await syncSheetData(targetId, 'Personas', personasData);
 
-      if (userAgents.length > 0) {
-        const agentsData = formatAgentOpportunitiesForSheets(userAgents);
-        await syncSheetData(targetId, 'Agent Opportunities', agentsData);
-      }
+      const agentsData = formatAgentOpportunitiesForSheets(userAgents);
+      await syncSheetData(targetId, 'Agent Opportunities', agentsData);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sync failed');
