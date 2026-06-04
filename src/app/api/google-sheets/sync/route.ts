@@ -1,31 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
+import { JWT } from 'google-auth-library';
 
-// Initialize Google Auth
+// Initialize Google Auth with explicit JWT
 async function getGoogleAuth() {
   try {
-    const scopes = [
-      'https://www.googleapis.com/auth/spreadsheets',
-      'https://www.googleapis.com/auth/drive',
-      'https://www.googleapis.com/auth/drive.file'
-    ];
-
     if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
       // Production: Use service account JSON from environment variable
       const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
-      const auth = new google.auth.GoogleAuth({
-        credentials,
-        scopes
+      const client = new JWT({
+        email: credentials.client_email,
+        key: credentials.private_key,
+        scopes: [
+          'https://www.googleapis.com/auth/spreadsheets',
+          'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/drive.file'
+        ]
       });
-      const authClient = await auth.getClient();
-      return authClient;
+      return client;
     } else {
-      // Development: Use application default credentials (gcloud auth)
+      // Development: Fallback - this will likely fail in production but allows build
       const auth = new google.auth.GoogleAuth({
-        scopes
+        scopes: [
+          'https://www.googleapis.com/auth/spreadsheets',
+          'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/drive.file'
+        ]
       });
-      const authClient = await auth.getClient();
-      return authClient;
+      return await auth.getClient();
     }
   } catch (error) {
     console.error('Failed to initialize Google Auth:', error);
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // Initialize Google Sheets API
     const authClient = await getGoogleAuth();
-    const sheets = google.sheets({ version: 'v4', auth: authClient as any });
+    const sheets = google.sheets({ version: 'v4', auth: authClient });
 
     // Calculate the range based on data dimensions
     const numRows = data.length;
