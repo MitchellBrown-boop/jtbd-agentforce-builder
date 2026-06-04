@@ -243,15 +243,15 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
     ];
 
     const data = jobs.map(job => [
-      job.id,
-      job.statement,
-      job.jobType.toUpperCase(),
-      job.persona,
-      job.painPoints.join('\n• '),
-      job.successMetrics.join('\n• '),
-      job.currentSolutions.join('\n• '),
-      job.createdAt.toLocaleDateString(),
-      job.updatedAt.toLocaleDateString()
+      job.id || '',
+      job.statement || '',
+      job.jobType ? job.jobType.toUpperCase() : 'MICRO',
+      job.persona || '',
+      Array.isArray(job.painPoints) ? job.painPoints.join('\n• ') : '',
+      Array.isArray(job.successMetrics) ? job.successMetrics.join('\n• ') : '',
+      Array.isArray(job.currentSolutions) ? job.currentSolutions.join('\n• ') : '',
+      job.createdAt instanceof Date ? job.createdAt.toLocaleDateString() : new Date().toLocaleDateString(),
+      job.updatedAt instanceof Date ? job.updatedAt.toLocaleDateString() : new Date().toLocaleDateString()
     ]);
 
     return [headers, ...data];
