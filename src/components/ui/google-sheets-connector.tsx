@@ -306,9 +306,23 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
                 />
               </div>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end space-x-2 mt-4">
               <button
-                onClick={() => setShowCollaboratorForm(false)}
+                onClick={() => {
+                  setShowCollaboratorForm(false);
+                  setCollaboratorName('');
+                  setCollaboratorEmail('');
+                }}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (collaboratorName && collaboratorEmail) {
+                    setShowCollaboratorForm(false);
+                  }
+                }}
                 disabled={!collaboratorName || !collaboratorEmail}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
