@@ -12,17 +12,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`Sync request for sheet "${sheet_name}" in spreadsheet ${spreadsheet_id}:`);
-    console.log(`Rows: ${data.length}, Columns: ${data[0]?.length || 0}`);
+    console.log('=== GOOGLE SHEETS SYNC REQUEST ===');
+    console.log(`Sheet: "${sheet_name}" in spreadsheet ${spreadsheet_id}`);
+    console.log(`Data dimensions: ${data.length} rows × ${data[0]?.length || 0} columns`);
+    console.log('Data to sync:');
 
-    // For now, simulate successful sync to avoid Google API type issues
-    // The Algolia pre-created sheet will work through direct Google Sheets UI
+    // Log data in readable format
+    data.forEach((row: any[], index: number) => {
+      console.log(`Row ${index + 1}:`, row);
+    });
+
+    console.log('=== END SYNC DATA ===');
+
+    // For now, return success with detailed logging
+    // This gives Algolia team clear visibility into what would sync
     const result = {
       success: true,
-      message: `Sync simulated for ${data.length} rows to "${sheet_name}"`,
+      message: `Sync logged for ${data.length} rows to "${sheet_name}"`,
       timestamp: new Date().toISOString(),
-      note: 'For Algolia deployment: Data is available in the app. Use Google Sheets directly for collaboration.',
-      spreadsheet_url: `https://docs.google.com/spreadsheets/d/${spreadsheet_id}/edit`
+      data_preview: data.slice(0, 3), // Show first 3 rows in response
+      spreadsheet_url: `https://docs.google.com/spreadsheets/d/${spreadsheet_id}/edit`,
+      note: 'Data logged to console. For manual verification, copy the logged data to your Google Sheet.'
     };
 
     return NextResponse.json(result);
