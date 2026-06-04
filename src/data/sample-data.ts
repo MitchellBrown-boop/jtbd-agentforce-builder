@@ -275,7 +275,6 @@ export const sampleAgentOpportunities: AgentOpportunity[] = [
     description: 'Automatically handles common customer inquiries with instant, accurate responses to reduce support ticket volume by 73%',
     jobIds: ['customer-inquiry-deflection'],
     priority: 'high',
-    complexity: 'moderate',
     estimatedImpact: '73% case deflection rate, instant 24/7 customer response, $4M+ cost savings',
     technicalRequirements: ['Knowledge base integration', 'Intent classification', 'Multi-channel deployment'],
     integrations: ['Salesforce Service Cloud', 'Knowledge Base', 'Live Chat', 'Email Support']
@@ -286,7 +285,6 @@ export const sampleAgentOpportunities: AgentOpportunity[] = [
     description: 'Combines account research and lead qualification to prepare SDRs with complete prospect context and scoring',
     jobIds: ['prospect-research-preparation', 'lead-qualification-scoring'],
     priority: 'high',
-    complexity: 'complex',
     estimatedImpact: '25% increase in qualified meetings, research time reduced from 20 to 5 minutes',
     technicalRequirements: ['Data aggregation', 'Lead scoring algorithms', 'CRM integration', 'External data sources'],
     integrations: ['Salesforce Sales Cloud', 'ZoomInfo', 'LinkedIn Sales Navigator', 'Outreach']
@@ -297,7 +295,6 @@ export const sampleAgentOpportunities: AgentOpportunity[] = [
     description: 'Surfaces Salesforce data and actions directly in Slack, eliminating context switching for engineering teams',
     jobIds: ['slack-data-access'],
     priority: 'high',
-    complexity: 'complex',
     estimatedImpact: '60% faster deal cycles, eliminates toggle tax, maintains engineering workflow',
     technicalRequirements: ['Slack MCP Server', 'Headless Experience Layer', 'Sales Cloud MCP tools'],
     integrations: ['Slack', 'Salesforce Sales Cloud', 'Service Cloud', 'MCP Servers']
@@ -308,7 +305,6 @@ export const sampleAgentOpportunities: AgentOpportunity[] = [
     description: 'Enables React-native development teams to build on Salesforce without LWC rewrites using Multi-Framework support',
     jobIds: ['react-salesforce-integration'],
     priority: 'high',
-    complexity: 'complex',
     estimatedImpact: '31% faster deployments, 2.7x more likely to achieve complete customer view',
     technicalRequirements: ['Multi-Framework support', 'React micro-frontends', 'Headless Experience Layer'],
     integrations: ['Salesforce Multi-Framework (GA June \'26)', 'React Components', 'Lightning Platform']
@@ -319,7 +315,6 @@ export const sampleAgentOpportunities: AgentOpportunity[] = [
     description: 'Automates meeting coordination with context-aware prioritization and stakeholder preference learning',
     jobIds: ['meeting-scheduling-coordination'],
     priority: 'medium',
-    complexity: 'moderate',
     estimatedImpact: '70% reduction in scheduling coordination time, 90% first-time meeting success',
     technicalRequirements: ['Calendar integration', 'Preference learning', 'Multi-party coordination'],
     integrations: ['Calendly', 'Salesforce Calendar', 'Outlook', 'Google Calendar']

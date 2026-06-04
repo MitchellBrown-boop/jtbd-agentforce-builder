@@ -33,7 +33,6 @@ export interface AgentOpportunity {
   description: string;
   jobIds: string[];
   priority: 'high' | 'medium' | 'low';
-  complexity: 'simple' | 'moderate' | 'complex';
   estimatedImpact: string;
   technicalRequirements: string[];
   integrations: string[];

@@ -170,15 +170,6 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
                   <p className="text-gray-700 mb-3">{agent.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-blue-600 font-medium">Expected Impact: {agent.estimatedImpact}</span>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        agent.complexity === 'simple' ? 'bg-green-100 text-green-800' :
-                        agent.complexity === 'moderate' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {agent.complexity} complexity
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>

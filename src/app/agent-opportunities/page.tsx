@@ -17,14 +17,6 @@ export default function AgentOpportunitiesPage() {
     }
   };
 
-  const getComplexityColor = (complexity: string) => {
-    switch (complexity) {
-      case 'simple': return 'bg-green-100 text-green-800';
-      case 'moderate': return 'bg-yellow-100 text-yellow-800';
-      case 'complex': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   if (selectedOpportunity) {
     return (
@@ -49,9 +41,6 @@ export default function AgentOpportunitiesPage() {
                 <div className="flex space-x-3">
                   <span className={`px-3 py-1 text-sm rounded-full border ${getPriorityColor(selectedOpportunity.priority)}`}>
                     {selectedOpportunity.priority} priority
-                  </span>
-                  <span className={`px-3 py-1 text-sm rounded-full ${getComplexityColor(selectedOpportunity.complexity)}`}>
-                    {selectedOpportunity.complexity}
                   </span>
                 </div>
               </div>
@@ -197,9 +186,6 @@ export default function AgentOpportunitiesPage() {
                 <div className="flex space-x-2">
                   <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityColor(opportunity.priority)}`}>
                     {opportunity.priority}
-                  </span>
-                  <span className={`px-2 py-1 text-xs rounded-full ${getComplexityColor(opportunity.complexity)}`}>
-                    {opportunity.complexity}
                   </span>
                 </div>
               </div>
