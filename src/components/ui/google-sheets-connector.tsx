@@ -29,7 +29,12 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
           isAlgoliaDeployment() &&
           ALGOLIA_CONFIG.GOOGLE_SHEET_ID !== 'PASTE_SPREADSHEET_ID_HERE') {
 
-        console.log('Auto-connecting Algolia deployment...');
+        console.log('Auto-connecting Algolia deployment...', {
+          spreadsheetId: ALGOLIA_CONFIG.GOOGLE_SHEET_ID,
+          jobs: appState.jobs.length,
+          personas: appState.personas.length,
+          agents: appState.agentOpportunities.length
+        });
 
         const spreadsheetId = ALGOLIA_CONFIG.GOOGLE_SHEET_ID;
         const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
@@ -44,12 +49,7 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
           currentWorkshopId: spreadsheetId
         });
 
-        // Auto-sync initial data
-        try {
-          await syncToSheets(spreadsheetId);
-        } catch (error) {
-          console.log('Initial sync skipped:', error);
-        }
+        console.log('Algolia auto-connect complete - ready for user data');
       }
     };
 
@@ -186,17 +186,37 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
     setError('');
 
     try {
-      // Sync Jobs data
-      const jobsData = formatJobsForSheets(appState.jobs);
-      await syncSheetData(targetId, 'Jobs Framework', jobsData);
+      // Filter out example data - only sync user-created content
+      // Example data has specific IDs from sample-data.ts
+      const exampleJobIds = ['sarah-pain-points', 'jordan-workflow', 'alex-integrations'];
+      const examplePersonaIds = ['sarah-chen', 'jordan-patel', 'alex-rivera'];
+      const exampleAgentIds = ['cust-svc-agent', 'sales-agent', 'ops-agent', 'analytics-agent', 'integration-agent'];
 
-      // Sync Personas data
-      const personasData = formatPersonasForSheets(appState.personas);
-      await syncSheetData(targetId, 'Personas', personasData);
+      const userJobs = appState.jobs.filter(job => !exampleJobIds.includes(job.id));
+      const userPersonas = appState.personas.filter(persona => !examplePersonaIds.includes(persona.id));
+      const userAgents = appState.agentOpportunities.filter(agent => !exampleAgentIds.includes(agent.id));
 
-      // Sync Agent Opportunities data
-      const agentsData = formatAgentOpportunitiesForSheets(appState.agentOpportunities);
-      await syncSheetData(targetId, 'Agent Opportunities', agentsData);
+      console.log('Syncing user data only:', {
+        jobs: userJobs.length,
+        personas: userPersonas.length,
+        agents: userAgents.length
+      });
+
+      // Sync only user-created data
+      if (userJobs.length > 0) {
+        const jobsData = formatJobsForSheets(userJobs);
+        await syncSheetData(targetId, 'Jobs Framework', jobsData);
+      }
+
+      if (userPersonas.length > 0) {
+        const personasData = formatPersonasForSheets(userPersonas);
+        await syncSheetData(targetId, 'Personas', personasData);
+      }
+
+      if (userAgents.length > 0) {
+        const agentsData = formatAgentOpportunitiesForSheets(userAgents);
+        await syncSheetData(targetId, 'Agent Opportunities', agentsData);
+      }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sync failed');
@@ -403,23 +423,36 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
           </div>
         )}
 
-        {/* Sharing Instructions */}
-        {collaboratorName && (
+        {/* Prominent Google Sheet Access */}
+        {spreadsheetUrl && (
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">📋 Share with {collaboratorName}:</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-blue-700 mb-1">1. Access Google Sheet:</p>
-                <p className="text-blue-600">Click "Open Sheet" to view your dedicated JTBD framework sheet</p>
+                <h4 className="font-semibold text-blue-800 mb-1">📊 Your JTBD Google Sheet</h4>
+                <p className="text-sm text-blue-600">Ready for {collaboratorName || 'your team'} collaboration</p>
               </div>
-              <div>
-                <p className="font-medium text-blue-700 mb-1">2. Use This App:</p>
-                <p className="text-blue-600">Build your framework here: <code className="bg-blue-100 px-1 rounded text-xs">{typeof window !== 'undefined' ? window.location.origin : 'this website URL'}</code></p>
-              </div>
+              <a
+                href={spreadsheetUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>Open Google Sheet</span>
+              </a>
             </div>
-            <p className="text-xs text-blue-500 mt-2">
-              ✅ Use this app to build your JTBD framework. Copy completed sections to your Google Sheet for collaboration and documentation.
-            </p>
+          </div>
+        )}
+
+        {/* Usage Instructions */}
+        {collaboratorName && (
+          <div className="mt-4 bg-green-50 border border-green-200 rounded p-4">
+            <h4 className="font-semibold text-green-800 mb-2">🚀 Ready for {collaboratorName}:</h4>
+            <div className="text-sm text-green-700 space-y-2">
+              <p>• <strong>Build framework:</strong> Use this app to create jobs, personas, and agent opportunities</p>
+              <p>• <strong>Collaborate:</strong> New data automatically syncs to your Google Sheet</p>
+              <p>• <strong>Share:</strong> Send team members this URL: <code className="bg-green-100 px-1 rounded text-xs">{typeof window !== 'undefined' ? window.location.origin : 'this website URL'}</code></p>
+            </div>
             <button
               onClick={() => {
                 setShowCollaboratorForm(true);
