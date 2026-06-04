@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AppState, JTBDJob } from '@/lib/types';
 import { BarChart3, Users, Target, ArrowRight, Presentation, Download } from 'lucide-react';
+import { getVisiblePersonas, getVisibleJobs, getVisibleAgentOpportunities, isShowingSampleData } from '@/lib/data-utils';
 
 interface PresentingModeProps {
   appState: AppState;
@@ -10,17 +11,22 @@ interface PresentingModeProps {
 }
 
 export default function PresentingMode({ appState }: PresentingModeProps) {
+  // Get filtered data (hide sample data when real data exists)
+  const visiblePersonas = getVisiblePersonas(appState.personas);
+  const visibleJobs = getVisibleJobs(appState.jobs);
+  const visibleAgentOpportunities = getVisibleAgentOpportunities(appState.agentOpportunities);
+  const showingSampleData = isShowingSampleData(appState.personas, appState.jobs, appState.agentOpportunities);
 
-  const jobsByType = appState.jobs.reduce((acc, job) => {
+  const jobsByType = visibleJobs.reduce((acc, job) => {
     acc[job.jobType] = (acc[job.jobType] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
   // Calculate normalized weekly time by persona
-  const timeByPersona = appState.jobs.reduce((acc, job) => {
+  const timeByPersona = visibleJobs.reduce((acc, job) => {
     if (!job.timePerOccurrence || !job.frequency) return acc;
 
-    const persona = appState.personas.find(p => p.id === job.persona);
+    const persona = visiblePersonas.find(p => p.id === job.persona);
     if (!persona) return acc;
 
     // Normalize to weekly time
@@ -60,23 +66,23 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-lg border p-6 text-center">
-          <div className="text-3xl font-bold text-blue-600 mb-2">{appState.jobs.length}</div>
+          <div className="text-3xl font-bold text-blue-600 mb-2">{visibleJobs.length}</div>
           <div className="text-sm text-gray-600">Jobs Identified</div>
         </div>
 
         <div className="bg-white rounded-lg border p-6 text-center">
-          <div className="text-3xl font-bold text-green-600 mb-2">{appState.agentOpportunities.length}</div>
+          <div className="text-3xl font-bold text-green-600 mb-2">{visibleAgentOpportunities.length}</div>
           <div className="text-sm text-gray-600">Agent Opportunities</div>
         </div>
 
         <div className="bg-white rounded-lg border p-6 text-center">
-          <div className="text-3xl font-bold text-purple-600 mb-2">{appState.personas.length}</div>
+          <div className="text-3xl font-bold text-purple-600 mb-2">{visiblePersonas.length}</div>
           <div className="text-sm text-gray-600">Personas Analyzed</div>
         </div>
 
         <div className="bg-white rounded-lg border p-6 text-center">
           <div className="text-3xl font-bold text-orange-600 mb-2">
-            {Math.round((appState.agentOpportunities.length / Math.max(appState.jobs.length, 1)) * 100)}%
+            {Math.round((visibleAgentOpportunities.length / Math.max(visibleJobs.length, 1)) * 100)}%
           </div>
           <div className="text-sm text-gray-600">Automation Potential</div>
         </div>
@@ -155,7 +161,7 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
         <h3 className="text-2xl font-bold text-gray-900 mb-6">Priority Agent Opportunities</h3>
 
         <div className="grid gap-6">
-          {appState.agentOpportunities
+          {visibleAgentOpportunities
             .filter(agent => agent.priority === 'high')
             .slice(0, 3)
             .map((agent, index) => (
@@ -176,7 +182,7 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
             ))}
         </div>
 
-        {appState.agentOpportunities.filter(a => a.priority === 'high').length === 0 && (
+        {visibleAgentOpportunities.filter(a => a.priority === 'high').length === 0 && (
           <div className="text-center py-12 text-gray-500">
             <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
             <p>No high-priority agent opportunities identified yet.</p>

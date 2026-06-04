@@ -14,6 +14,7 @@ export interface JTBDJob {
   frequency?: 'daily' | 'weekly' | 'monthly' | 'as-needed'; // How often this job occurs
   createdAt: Date;
   updatedAt: Date;
+  isSample?: boolean; // Mark sample data to hide when real data exists
 }
 
 export interface Persona {
@@ -25,6 +26,7 @@ export interface Persona {
   painPoints: string[];
   tools: string[];
   goals: string[];
+  isSample?: boolean; // Mark sample data to hide when real data exists
 }
 
 export interface AgentOpportunity {
@@ -36,6 +38,7 @@ export interface AgentOpportunity {
   estimatedImpact: string;
   technicalRequirements: string[];
   integrations: string[];
+  isSample?: boolean; // Mark sample data to hide when real data exists
 }
 
 // Application Modes

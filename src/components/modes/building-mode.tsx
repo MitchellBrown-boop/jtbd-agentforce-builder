@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { AppState, JTBDJob, Persona } from '@/lib/types';
 import { Plus, Edit, Trash2, User, Target, Zap, CheckCircle, AlertCircle, Lightbulb, ArrowLeft } from 'lucide-react';
 import GoogleSheetsConnector from '@/components/ui/google-sheets-connector';
+import { getVisiblePersonas, getVisibleJobs, getVisibleAgentOpportunities, isShowingSampleData } from '@/lib/data-utils';
 
 interface BuildingModeProps {
   appState: AppState;
@@ -14,6 +15,12 @@ interface BuildingModeProps {
 
 export default function BuildingMode({ appState, updateAppState }: BuildingModeProps) {
   const [activeView, setActiveView] = useState<'overview' | 'create-job' | 'edit-job' | 'create-persona' | 'persona-detail' | 'personas-overview'>('overview');
+
+  // Get filtered data (hide sample data when real data exists)
+  const visiblePersonas = getVisiblePersonas(appState.personas);
+  const visibleJobs = getVisibleJobs(appState.jobs);
+  const visibleAgentOpportunities = getVisibleAgentOpportunities(appState.agentOpportunities);
+  const showingSampleData = isShowingSampleData(appState.personas, appState.jobs, appState.agentOpportunities);
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
   const [editingJob, setEditingJob] = useState<JTBDJob | null>(null);
   const [expandedJobs, setExpandedJobs] = useState<Set<string>>(new Set());
@@ -226,8 +233,8 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
           <div className="flex items-center space-x-3">
             <User className="w-8 h-8 text-green-600" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{appState.personas.length}</p>
-              <p className="text-sm text-gray-600">Personas</p>
+              <p className="text-2xl font-bold text-gray-900">{visiblePersonas.length}</p>
+              <p className="text-sm text-gray-600">Personas{showingSampleData ? ' (Examples)' : ''}</p>
             </div>
           </div>
         </div>
@@ -239,8 +246,8 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
           <div className="flex items-center space-x-3">
             <Zap className="w-8 h-8 text-purple-600" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{appState.agentOpportunities.length}</p>
-              <p className="text-sm text-gray-600">Agent Opportunities</p>
+              <p className="text-2xl font-bold text-gray-900">{visibleAgentOpportunities.length}</p>
+              <p className="text-sm text-gray-600">Agent Opportunities{showingSampleData ? ' (Examples)' : ''}</p>
             </div>
           </div>
         </div>
@@ -1369,7 +1376,7 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
 
       {/* Personas Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {appState.personas.map((persona) => {
+        {visiblePersonas.map((persona) => {
           const personaJobs = appState.jobs.filter(job => job.persona === persona.id);
           const isExample = ['sarah-chen', 'marcus-rodriguez', 'alex-kim'].includes(persona.id);
 
@@ -1430,7 +1437,7 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
         })}
       </div>
 
-      {appState.personas.length === 0 && (
+      {visiblePersonas.length === 0 && (
         <div className="text-center py-12">
           <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No personas created yet</h3>
