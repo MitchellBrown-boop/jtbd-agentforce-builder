@@ -48,7 +48,6 @@ export default function LearningMode({ appState, updateAppState }: LearningModeP
       case 'job-hierarchy': return Target;
       case 'job-discovery': return Lightbulb;
       case 'ai-opportunity-mapping': return Zap;
-      case 'workshop-facilitation': return Award;
       default: return BookOpen;
     }
   };

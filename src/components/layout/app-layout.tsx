@@ -9,9 +9,8 @@ import { appConfig } from '@/lib/config';
 import ModeNavigation from './mode-navigation';
 import LearningMode from '@/components/modes/learning-mode';
 import BuildingMode from '@/components/modes/building-mode';
-import FacilitatingMode from '@/components/modes/facilitating-mode';
 import PresentingMode from '@/components/modes/presenting-mode';
-import { Book, Wrench, Users, Presentation } from 'lucide-react';
+import { Book, Wrench, Presentation } from 'lucide-react';
 
 const modeConfig = {
   learning: {
@@ -25,12 +24,6 @@ const modeConfig = {
     description: 'Create and manage your JTBD framework',
     icon: Wrench,
     color: 'bg-green-500'
-  },
-  facilitating: {
-    title: 'Facilitating Mode',
-    description: 'Workshop tools for stakeholder sessions',
-    icon: Users,
-    color: 'bg-purple-500'
   },
   presenting: {
     title: 'Presenting Mode',
@@ -68,8 +61,6 @@ export default function AppLayout() {
         return <LearningMode {...commonProps} />;
       case 'building':
         return <BuildingMode {...commonProps} />;
-      case 'facilitating':
-        return <FacilitatingMode {...commonProps} />;
       case 'presenting':
         return <PresentingMode {...commonProps} />;
       default:

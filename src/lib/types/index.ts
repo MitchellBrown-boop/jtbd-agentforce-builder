@@ -40,7 +40,7 @@ export interface AgentOpportunity {
 }
 
 // Application Modes
-export type AppMode = 'learning' | 'building' | 'facilitating' | 'presenting';
+export type AppMode = 'learning' | 'building' | 'presenting';
 
 export interface AppState {
   currentMode: AppMode;
@@ -80,23 +80,6 @@ export interface QuizQuestion {
   options: string[];
   correctAnswer: number;
   explanation: string;
-}
-
-// Workshop Mode Types
-export interface WorkshopSession {
-  id: string;
-  name: string;
-  participants: Participant[];
-  jobs: JTBDJob[];
-  status: 'setup' | 'active' | 'review' | 'completed';
-  createdAt: Date;
-}
-
-export interface Participant {
-  id: string;
-  name: string;
-  role: string;
-  contributions: string[];
 }
 
 // Presentation Mode Types

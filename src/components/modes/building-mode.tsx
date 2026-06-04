@@ -4,7 +4,7 @@ import { useState } from 'react';
 // Framer Motion temporarily disabled for debugging
 // import { motion, AnimatePresence } from 'framer-motion';
 import { AppState, JTBDJob, Persona } from '@/lib/types';
-import { Plus, Edit, Trash2, User, Target, Zap, CheckCircle, AlertCircle, Lightbulb } from 'lucide-react';
+import { Plus, Edit, Trash2, User, Target, Zap, CheckCircle, AlertCircle, Lightbulb, ArrowLeft } from 'lucide-react';
 import GoogleSheetsConnector from '@/components/ui/google-sheets-connector';
 
 interface BuildingModeProps {
@@ -13,7 +13,8 @@ interface BuildingModeProps {
 }
 
 export default function BuildingMode({ appState, updateAppState }: BuildingModeProps) {
-  const [activeView, setActiveView] = useState<'overview' | 'create-job' | 'edit-job' | 'create-persona'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'create-job' | 'edit-job' | 'create-persona' | 'persona-detail' | 'personas-overview'>('overview');
+  const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
   const [editingJob, setEditingJob] = useState<JTBDJob | null>(null);
   const [expandedJobs, setExpandedJobs] = useState<Set<string>>(new Set());
   const [jobFormData, setJobFormData] = useState({
@@ -217,18 +218,11 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
   const renderOverview = () => (
     <div className="space-y-8">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg border p-6">
-          <div className="flex items-center space-x-3">
-            <Target className="w-8 h-8 text-blue-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{appState.jobs.filter(job => job.jobType === 'micro').length}</p>
-              <p className="text-sm text-gray-600">Micro Jobs</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border p-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div
+          className="bg-white rounded-lg border p-6 hover:shadow-lg transition-shadow cursor-pointer"
+          onClick={() => setActiveView('personas-overview')}
+        >
           <div className="flex items-center space-x-3">
             <User className="w-8 h-8 text-green-600" />
             <div>
@@ -298,23 +292,49 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
             const isExample = ['sarah-chen', 'marcus-rodriguez', 'alex-kim'].includes(job.persona);
             return (
               <div key={job.id} className="p-6 hover:bg-gray-50 relative">
-                {isExample && (
-                  <div className="absolute top-4 right-4">
-                    <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200 rounded">
-                      EXAMPLE
-                    </span>
-                  </div>
-                )}
                 <div className="flex items-start justify-between">
                   <div className="flex-1 space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getJobTypeColor(job.jobType)}`}>
-                        {job.jobType.toUpperCase()} JOB
-                      </span>
-                      {persona && (
-                        <span className="text-xs text-gray-500">
-                          {persona.name}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getJobTypeColor(job.jobType)}`}>
+                          {job.jobType.toUpperCase()} JOB
                         </span>
+                        {isExample && (
+                          <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200 rounded">
+                            EXAMPLE
+                          </span>
+                        )}
+                        {persona && (
+                          <button
+                            onClick={() => {
+                              setSelectedPersona(persona.id);
+                              setActiveView('persona-detail');
+                            }}
+                            className="text-xs text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                          >
+                            {persona.name}
+                          </button>
+                        )}
+                      </div>
+
+                      {job.timePerOccurrence && job.frequency && (
+                        <div className="flex items-center space-x-2 text-xs text-gray-500">
+                          <span>{job.timePerOccurrence} min</span>
+                          <span>•</span>
+                          <span className="capitalize">{job.frequency}</span>
+                          <span>•</span>
+                          <span className="font-medium text-orange-600">
+                            {(() => {
+                              const multiplier = {
+                                'daily': 5,
+                                'weekly': 1,
+                                'monthly': 0.25,
+                                'as-needed': 1
+                              }[job.frequency] || 1;
+                              return `${Math.round(job.timePerOccurrence * multiplier)} min/week`;
+                            })()}
+                          </span>
+                        </div>
                       )}
                     </div>
 
@@ -1122,12 +1142,319 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     </div>
   );
 
+  const renderPersonaDetail = () => {
+    const persona = appState.personas.find(p => p.id === selectedPersona);
+    if (!persona) return null;
+
+    const personaJobs = appState.jobs.filter(job => job.persona === selectedPersona);
+
+    return (
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <button
+            onClick={() => setActiveView('overview')}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Framework</span>
+          </button>
+
+          <div className="bg-white rounded-lg border p-8">
+            <div className="flex items-start space-x-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                <User className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{persona.name}</h1>
+                <p className="text-lg text-gray-600 mb-4">{persona.description}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Key Responsibilities</h3>
+                    <ul className="space-y-1">
+                      {persona.responsibilities.map((resp, index) => (
+                        <li key={index} className="flex items-start space-x-2">
+                          <span className="text-green-500 mt-1">•</span>
+                          <span className="text-gray-700">{resp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Primary Tools</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {persona.tools.map((tool, index) => (
+                        <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Jobs for this Persona */}
+        <div className="bg-white rounded-lg border">
+          <div className="px-6 py-4 border-b">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Jobs for {persona.name} ({personaJobs.length})
+            </h2>
+          </div>
+
+          {personaJobs.length > 0 ? (
+            <div className="divide-y">
+              {personaJobs.map((job) => {
+                const totalWeeklyMinutes = job.timePerOccurrence && job.frequency ? (() => {
+                  const multiplier = {
+                    'daily': 5,
+                    'weekly': 1,
+                    'monthly': 0.25,
+                    'as-needed': 1
+                  }[job.frequency] || 1;
+                  return job.timePerOccurrence * multiplier;
+                })() : 0;
+
+                return (
+                  <div key={job.id} className="p-6 hover:bg-gray-50">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getJobTypeColor(job.jobType)}`}>
+                              {job.jobType.toUpperCase()} JOB
+                            </span>
+                            {job.timePerOccurrence && job.frequency && (
+                              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                <span>{job.timePerOccurrence} min</span>
+                                <span>•</span>
+                                <span className="capitalize">{job.frequency}</span>
+                                <span>•</span>
+                                <span className="font-medium text-orange-600">
+                                  {Math.round(totalWeeklyMinutes)} min/week
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleStartEdit(job)}
+                              className="p-2 text-gray-400 hover:text-gray-600"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <p className="text-gray-900 font-medium leading-relaxed">
+                          {job.statement}
+                        </p>
+
+                        {/* Job Hierarchy Context */}
+                        {(job.bigJobContext || job.littleJobContext) && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+                            <p className="text-xs font-semibold text-blue-800 uppercase tracking-wide">Job Hierarchy</p>
+                            {job.bigJobContext && (
+                              <div className="flex items-start space-x-2">
+                                <span className="px-2 py-0.5 text-xs font-medium rounded bg-purple-100 text-purple-800 border border-purple-200 flex-shrink-0 mt-0.5">
+                                  BIG JOB
+                                </span>
+                                <p className="text-sm text-gray-700">{job.bigJobContext}</p>
+                              </div>
+                            )}
+                            {job.littleJobContext && (
+                              <div className="flex items-start space-x-2">
+                                <span className="px-2 py-0.5 text-xs font-medium rounded bg-blue-100 text-blue-800 border border-blue-200 flex-shrink-0 mt-0.5">
+                                  LITTLE JOB
+                                </span>
+                                <p className="text-sm text-gray-700">{job.littleJobContext}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Details Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-500 font-medium mb-1">Pain Points</p>
+                            <ul className="space-y-1">
+                              {job.painPoints.slice(0, 3).map((point, index) => (
+                                <li key={index} className="text-gray-600 flex items-start space-x-1">
+                                  <span className="text-red-400 mt-1">•</span>
+                                  <span>{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div>
+                            <p className="text-gray-500 font-medium mb-1">Success Metrics</p>
+                            <ul className="space-y-1">
+                              {job.successMetrics.slice(0, 3).map((metric, index) => (
+                                <li key={index} className="text-gray-600 flex items-start space-x-1">
+                                  <span className="text-green-400 mt-1">•</span>
+                                  <span>{metric}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div>
+                            <p className="text-gray-500 font-medium mb-1">Current Solutions</p>
+                            <ul className="space-y-1">
+                              {job.currentSolutions.slice(0, 3).map((solution, index) => (
+                                <li key={index} className="text-gray-600 flex items-start space-x-1">
+                                  <span className="text-blue-400 mt-1">•</span>
+                                  <span>{solution}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-12 text-center">
+              <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs created yet</h3>
+              <p className="text-gray-600 mb-4">Create jobs for this persona to see them here</p>
+              <button
+                onClick={() => setActiveView('create-job')}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Create First Job
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderPersonasOverview = () => (
+    <div className="max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <button
+          onClick={() => setActiveView('overview')}
+          className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Framework</span>
+        </button>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">All Personas</h1>
+            <p className="text-gray-600">Click on any persona to view their jobs and details</p>
+          </div>
+          <button
+            onClick={() => setActiveView('create-persona')}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Persona</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Personas Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {appState.personas.map((persona) => {
+          const personaJobs = appState.jobs.filter(job => job.persona === persona.id);
+          const isExample = ['sarah-chen', 'marcus-rodriguez', 'alex-kim'].includes(persona.id);
+
+          return (
+            <div
+              key={persona.id}
+              onClick={() => {
+                setSelectedPersona(persona.id);
+                setActiveView('persona-detail');
+              }}
+              className="bg-white rounded-lg border p-6 hover:shadow-lg transition-shadow cursor-pointer relative"
+            >
+              {isExample && (
+                <div className="absolute top-4 right-4">
+                  <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200 rounded">
+                    EXAMPLE
+                  </span>
+                </div>
+              )}
+
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{persona.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{persona.role}</p>
+                  <p className="text-sm text-gray-700 mb-4 line-clamp-2">{persona.description}</p>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">
+                      {personaJobs.length} {personaJobs.length === 1 ? 'job' : 'jobs'}
+                    </span>
+                    <span className="text-blue-600 hover:text-blue-800">
+                      View details →
+                    </span>
+                  </div>
+
+                  {persona.tools.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {persona.tools.slice(0, 3).map((tool, index) => (
+                        <span key={index} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
+                          {tool}
+                        </span>
+                      ))}
+                      {persona.tools.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs">
+                          +{persona.tools.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {appState.personas.length === 0 && (
+        <div className="text-center py-12">
+          <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No personas created yet</h3>
+          <p className="text-gray-600 mb-4">Create your first persona to get started</p>
+          <button
+            onClick={() => setActiveView('create-persona')}
+            className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create First Persona</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div>
       <div>
         {activeView === 'overview' && renderOverview()}
         {activeView === 'create-job' && renderCreateJob()}
         {activeView === 'edit-job' && renderEditJob()}
+        {activeView === 'persona-detail' && renderPersonaDetail()}
+        {activeView === 'personas-overview' && renderPersonasOverview()}
       </div>
     </div>
   );

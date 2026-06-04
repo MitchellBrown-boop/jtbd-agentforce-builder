@@ -23,7 +23,7 @@ export default function ModeNavigation({
   onModeChange,
   modeConfig
 }: ModeNavigationProps) {
-  const modes: AppMode[] = ['learning', 'building', 'facilitating', 'presenting'];
+  const modes: AppMode[] = ['learning', 'building', 'presenting'];
 
   return (
     <nav className="bg-white border-b shadow-sm">
