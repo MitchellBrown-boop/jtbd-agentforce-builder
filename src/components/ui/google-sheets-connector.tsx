@@ -188,7 +188,7 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
   const formatAgentOpportunitiesForSheets = (opportunities: AgentOpportunity[]): any[][] => {
     const headers = [
       'ID', 'Name', 'Description', 'Related Jobs', 'Priority',
-      'Complexity', 'Estimated Impact', 'Technical Requirements', 'Integrations'
+      'Estimated Impact', 'Technical Requirements', 'Integrations'
     ];
 
     const data = opportunities.map(opportunity => [
@@ -197,7 +197,6 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
       opportunity.description,
       opportunity.jobIds.join(', '),
       opportunity.priority.toUpperCase(),
-      opportunity.complexity,
       opportunity.estimatedImpact,
       opportunity.technicalRequirements.join('\n• '),
       opportunity.integrations.join(', ')
