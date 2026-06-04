@@ -16,6 +16,9 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
   const [spreadsheetUrl, setSpreadsheetUrl] = useState('');
   const [connectionMethod, setConnectionMethod] = useState<'create' | 'existing'>('create');
   const [error, setError] = useState('');
+  const [collaboratorName, setCollaboratorName] = useState('');
+  const [collaboratorEmail, setCollaboratorEmail] = useState('');
+  const [showCollaboratorForm, setShowCollaboratorForm] = useState(false);
 
   const createNewSpreadsheet = async () => {
     setIsConnecting(true);
@@ -50,6 +53,9 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
           googleSheetsConnected: true,
           currentWorkshopId: idMatch[1]
         });
+
+        // Show collaborator form after successful connection
+        setShowCollaboratorForm(true);
 
         // Auto-sync initial data
         await syncToSheets(idMatch[1]);
@@ -223,7 +229,7 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
             <CheckCircle className="w-6 h-6 text-green-600" />
             <div>
               <h3 className="font-semibold text-green-800">Connected to Google Sheets</h3>
-              <p className="text-sm text-green-600">Ready to share with Jordan Brown</p>
+              <p className="text-sm text-green-600">Ready to share with collaborators</p>
             </div>
           </div>
 
@@ -273,23 +279,74 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
           </div>
         </div>
 
-        {/* Sharing Instructions */}
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded p-4">
-          <h4 className="font-semibold text-blue-800 mb-2">📋 Share with Jordan Brown:</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="font-medium text-blue-700 mb-1">1. Share Google Sheet:</p>
-              <p className="text-blue-600">Click "Open Sheet" → Share → Add Jordan's email with Editor access</p>
+        {/* Collaborator Setup Form */}
+        {showCollaboratorForm && !collaboratorName && (
+          <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded p-4">
+            <h4 className="font-semibold text-yellow-800 mb-3">👥 Add Collaborator Information</h4>
+            <p className="text-sm text-yellow-700 mb-4">Who will you be sharing this JTBD framework with?</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Collaborator Name</label>
+                <input
+                  type="text"
+                  value={collaboratorName}
+                  onChange={(e) => setCollaboratorName(e.target.value)}
+                  placeholder="e.g., Jordan Brown"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Collaborator Email</label>
+                <input
+                  type="email"
+                  value={collaboratorEmail}
+                  onChange={(e) => setCollaboratorEmail(e.target.value)}
+                  placeholder="e.g., jordan@company.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-blue-700 mb-1">2. Share Website:</p>
-              <p className="text-blue-600">Send Jordan this URL: <code className="bg-blue-100 px-1 rounded">localhost:3000</code></p>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowCollaboratorForm(false)}
+                disabled={!collaboratorName || !collaboratorEmail}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save Collaborator Info
+              </button>
             </div>
           </div>
-          <p className="text-xs text-blue-500 mt-2">
-            ✅ Jordan can then use this app to build the framework, and all changes sync to the shared Google Sheet in real-time!
-          </p>
-        </div>
+        )}
+
+        {/* Sharing Instructions */}
+        {collaboratorName && (
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded p-4">
+            <h4 className="font-semibold text-blue-800 mb-2">📋 Share with {collaboratorName}:</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="font-medium text-blue-700 mb-1">1. Share Google Sheet:</p>
+                <p className="text-blue-600">Click "Open Sheet" → Share → Add {collaboratorEmail} with Editor access</p>
+              </div>
+              <div>
+                <p className="font-medium text-blue-700 mb-1">2. Share Website:</p>
+                <p className="text-blue-600">Send {collaboratorName} this URL: <code className="bg-blue-100 px-1 rounded text-xs">{typeof window !== 'undefined' ? window.location.origin : 'this website URL'}</code></p>
+              </div>
+            </div>
+            <p className="text-xs text-blue-500 mt-2">
+              ✅ {collaboratorName} can then use this app to build the framework, and all changes sync to the shared Google Sheet in real-time!
+            </p>
+            <button
+              onClick={() => {
+                setShowCollaboratorForm(true);
+                setCollaboratorName('');
+                setCollaboratorEmail('');
+              }}
+              className="text-xs text-blue-600 hover:text-blue-800 mt-2"
+            >
+              Change collaborator details
+            </button>
+          </div>
+        )}
 
         {error && (
           <div className="mt-4 flex items-center space-x-2 text-red-600">

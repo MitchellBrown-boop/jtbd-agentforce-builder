@@ -26,9 +26,9 @@ Created sheets: ${sheet_names?.join(', ') || 'Sheet1'}
 
 📋 Next Steps:
 1. Click "Open Sheet" to view your new spreadsheet
-2. Share it with Jordan Brown: jordan.brown@algolia.com
-3. Give Jordan Editor access for real-time collaboration
-4. Send Jordan this app URL to start building together!`
+2. Share it with your collaborator using Editor access
+3. Share the JTBD app URL for real-time collaboration
+4. Start building your framework together!`
     };
 
     return NextResponse.json(response);
