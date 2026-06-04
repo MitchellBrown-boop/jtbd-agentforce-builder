@@ -609,28 +609,20 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
                 />
               </div>
 
-              <div className="bg-white border border-blue-300 rounded p-3">
-                <label className="block text-sm font-medium text-blue-700 mb-1">
-                  Micro Job - Specific task (your job statement below)
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Micro Job - Specific task when [situation], I want [outcome], so I can [goal] *
                 </label>
-                <p className="text-sm text-blue-600">This is the specific job statement you define below</p>
+                <textarea
+                  value={jobFormData.statement}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
+                  placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={3}
+                />
+                <p className="text-sm text-gray-500 mt-1">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
               </div>
             </div>
-          </div>
-
-          {/* Micro Job Statement */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Micro Job - Specific task when [situation], I want [outcome], so I can [goal] *
-            </label>
-            <textarea
-              value={jobFormData.statement}
-              onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
-              placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={3}
-            />
-            <p className="text-sm text-gray-500 mt-1">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
           </div>
 
           {/* Time & Frequency Tracking */}
@@ -959,28 +951,20 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
                 />
               </div>
 
-              <div className="bg-white border border-blue-300 rounded p-3">
-                <label className="block text-sm font-medium text-blue-700 mb-1">
-                  Micro Job - Specific task (your job statement below)
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Micro Job - Specific task when [situation], I want [outcome], so I can [goal] *
                 </label>
-                <p className="text-sm text-blue-600">This is the specific job statement you define below</p>
+                <textarea
+                  value={jobFormData.statement}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
+                  placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={3}
+                />
+                <p className="text-sm text-gray-500 mt-1">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
               </div>
             </div>
-          </div>
-
-          {/* Micro Job Statement */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Micro Job - Specific task when [situation], I want [outcome], so I can [goal]
-            </label>
-            <textarea
-              value={jobFormData.statement}
-              onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
-              placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={3}
-            />
-            <p className="text-sm text-gray-500 mt-1">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
           </div>
 
           {/* Time & Frequency Tracking */}
