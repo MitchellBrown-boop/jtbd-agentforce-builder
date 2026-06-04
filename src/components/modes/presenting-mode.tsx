@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AppState, JTBDJob } from '@/lib/types';
-import { BarChart3, TrendingUp, Users, Target, ArrowRight, Presentation, Download } from 'lucide-react';
+import { BarChart3, Users, Target, ArrowRight, Presentation, Download } from 'lucide-react';
 
 interface PresentingModeProps {
   appState: AppState;
@@ -10,7 +10,6 @@ interface PresentingModeProps {
 }
 
 export default function PresentingMode({ appState }: PresentingModeProps) {
-  const [viewMode, setViewMode] = useState<'executive' | 'technical'>('executive');
 
   const jobsByType = appState.jobs.reduce((acc, job) => {
     acc[job.jobType] = (acc[job.jobType] || 0) + 1;
@@ -238,27 +237,6 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
 
   return (
     <div>
-      {/* View Mode Selector */}
-      <div className="mb-8 flex space-x-4 bg-white rounded-lg border p-2">
-        {[
-          { mode: 'executive', label: 'Executive Summary', icon: TrendingUp },
-          { mode: 'technical', label: 'Technical Specs', icon: Target }
-        ].map(({ mode, label, icon: Icon }) => (
-          <button
-            key={mode}
-            onClick={() => setViewMode(mode as any)}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              viewMode === mode
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <Icon className="w-4 h-4" />
-            <span>{label}</span>
-          </button>
-        ))}
-      </div>
-
       {/* Export Actions */}
       <div className="mb-6 flex justify-end space-x-3">
         <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
@@ -271,16 +249,8 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
         </button>
       </div>
 
-      {/* Main Content */}
-      {viewMode === 'executive' && renderExecutiveDashboard()}
-
-      {viewMode === 'technical' && (
-        <div className="bg-white rounded-lg border p-8 text-center">
-          <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Technical Specifications</h3>
-          <p className="text-gray-600">Coming in Phase 2 - Advanced Features</p>
-        </div>
-      )}
+      {/* Executive Dashboard */}
+      {renderExecutiveDashboard()}
     </div>
   );
 }
