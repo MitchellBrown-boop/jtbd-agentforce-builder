@@ -17,6 +17,45 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
     return acc;
   }, {} as Record<string, number>);
 
+  // Calculate normalized weekly time by persona
+  const timeByPersona = appState.jobs.reduce((acc, job) => {
+    if (!job.timePerOccurrence || !job.frequency) return acc;
+
+    const persona = appState.personas.find(p => p.id === job.persona);
+    if (!persona) return acc;
+
+    // Normalize to weekly time
+    const multiplier = {
+      'daily': 5,      // 5 work days per week
+      'weekly': 1,     // Already weekly
+      'monthly': 0.25, // ~1 week per month
+      'as-needed': 1   // Assume weekly
+    }[job.frequency] || 1;
+
+    const weeklyMinutes = job.timePerOccurrence * multiplier;
+
+    if (!acc[persona.id]) {
+      acc[persona.id] = {
+        personaName: persona.name,
+        personaRole: persona.role,
+        totalWeeklyMinutes: 0,
+        jobCount: 0
+      };
+    }
+
+    acc[persona.id].totalWeeklyMinutes += weeklyMinutes;
+    acc[persona.id].jobCount += 1;
+
+    return acc;
+  }, {} as Record<string, { personaName: string; personaRole: string; totalWeeklyMinutes: number; jobCount: number }>);
+
+  // Sort personas by total weekly time (descending)
+  const sortedPersonaTime = Object.values(timeByPersona)
+    .sort((a, b) => b.totalWeeklyMinutes - a.totalWeeklyMinutes);
+
+  // Calculate total weekly time across all personas
+  const totalWeeklyTime = sortedPersonaTime.reduce((sum, persona) => sum + persona.totalWeeklyMinutes, 0);
+
   const renderExecutiveDashboard = () => (
     <div className="space-y-8">
       {/* Key Metrics */}
@@ -44,36 +83,72 @@ export default function PresentingMode({ appState }: PresentingModeProps) {
         </div>
       </div>
 
-      {/* Strategic Overview */}
+      {/* Time Impact Analysis */}
       <div className="bg-white rounded-lg border p-8">
-        <h3 className="text-2xl font-bold text-gray-900 mb-6">Jobs-to-be-Done Framework Overview</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">Weekly Time Impact by Persona</h3>
 
-        <div>
-          <div>
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">Job Complexity Distribution</h4>
+        {sortedPersonaTime.length > 0 ? (
+          <div className="space-y-4">
+            <div className="text-sm text-gray-600 mb-4">
+              Total weekly time across all personas: <span className="font-semibold text-gray-900">
+                {Math.round(totalWeeklyTime)} minutes ({(totalWeeklyTime / 60).toFixed(1)} hours)
+              </span>
+            </div>
+
             <div className="space-y-3">
-              {['big', 'little', 'micro'].map(jobType => (
-                <div key={jobType} className="flex items-center space-x-4">
+              {sortedPersonaTime.map((persona, index) => (
+                <div key={persona.personaName} className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    {index + 1}
+                  </div>
+
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium text-gray-700 capitalize">{jobType} Jobs</span>
-                      <span className="text-sm text-gray-500">{jobsByType[jobType] || 0}</span>
+                      <div>
+                        <span className="text-sm font-medium text-gray-900">{persona.personaRole}</span>
+                        <span className="text-xs text-gray-500 ml-2">({persona.jobCount} jobs)</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {Math.round(persona.totalWeeklyMinutes)} min/week
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          ({(persona.totalWeeklyMinutes / 60).toFixed(1)} hours)
+                        </div>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+
+                    <div className="w-full bg-gray-200 rounded-full h-3">
                       <div
-                        className={`h-2 rounded-full ${
-                          jobType === 'big' ? 'bg-purple-500' :
-                          jobType === 'little' ? 'bg-blue-500' : 'bg-green-500'
-                        }`}
-                        style={{ width: `${((jobsByType[jobType] || 0) / Math.max(appState.jobs.length, 1)) * 100}%` }}
+                        className="h-3 rounded-full bg-gradient-to-r from-orange-400 to-red-500"
+                        style={{ width: `${(persona.totalWeeklyMinutes / Math.max(totalWeeklyTime, 1)) * 100}%` }}
                       />
+                    </div>
+
+                    <div className="text-xs text-gray-600 mt-1">
+                      {Math.round((persona.totalWeeklyMinutes / Math.max(totalWeeklyTime, 1)) * 100)}% of total time impact
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+
+            <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+              <h5 className="text-sm font-semibold text-orange-800 mb-2">Automation Priority Insights</h5>
+              <ul className="text-sm text-orange-700 space-y-1">
+                <li>• <span className="font-medium">{sortedPersonaTime[0]?.personaRole}</span> represents the highest automation opportunity with {Math.round(sortedPersonaTime[0]?.totalWeeklyMinutes || 0)} minutes/week</li>
+                <li>• Focus agent development on personas with 120+ minutes/week (2+ hours) for maximum impact</li>
+                <li>• Target jobs with daily frequency first as they offer consistent time savings</li>
+              </ul>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            <BarChart3 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <p>No time data available for analysis.</p>
+            <p className="text-sm">Add time and frequency information to jobs in Building Mode to see time impact analysis.</p>
+          </div>
+        )}
       </div>
 
       {/* Top Opportunities */}
