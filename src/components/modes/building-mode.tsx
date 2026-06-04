@@ -480,67 +480,11 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     <div className="max-w-3xl mx-auto">
       <div className="bg-white rounded-lg border p-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Create New Job Statement</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Create New Micro Job Statement</h2>
           <p className="text-gray-600">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
         </div>
 
         <div className="space-y-6">
-          {/* Job Statement */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Job Statement *
-            </label>
-            <textarea
-              value={jobFormData.statement}
-              onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
-              placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={3}
-            />
-          </div>
-
-          {/* Job Hierarchy */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
-            <div className="flex items-center space-x-2 mb-4">
-              <Target className="w-5 h-5 text-blue-600" />
-              <h3 className="font-semibold text-blue-900">Job Hierarchy</h3>
-              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Define the complete job context</span>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Big Job - High-level outcome this supports
-                </label>
-                <input
-                  value={jobFormData.bigJobContext}
-                  onChange={(e) => setJobFormData(prev => ({ ...prev, bigJobContext: e.target.value }))}
-                  placeholder="e.g., Deliver exceptional customer support experience while scaling efficiently"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Little Job - Component task this is part of
-                </label>
-                <input
-                  value={jobFormData.littleJobContext}
-                  onChange={(e) => setJobFormData(prev => ({ ...prev, littleJobContext: e.target.value }))}
-                  placeholder="e.g., Process and respond to customer inquiries efficiently"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="bg-white border border-blue-300 rounded p-3">
-                <label className="block text-sm font-medium text-blue-700 mb-1">
-                  Micro Job - Specific task (your job statement above)
-                </label>
-                <p className="text-sm text-blue-600">This is the specific job statement you defined above</p>
-              </div>
-            </div>
-          </div>
-
           {/* Persona Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
@@ -630,6 +574,63 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Job Hierarchy */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <Target className="w-5 h-5 text-blue-600" />
+              <h3 className="font-semibold text-blue-900">Job Hierarchy</h3>
+              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Define the complete job context</span>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Big Job - High-level outcome this supports
+                </label>
+                <input
+                  value={jobFormData.bigJobContext}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, bigJobContext: e.target.value }))}
+                  placeholder="e.g., Deliver exceptional customer support experience while scaling efficiently"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Little Job - Component task this is part of
+                </label>
+                <input
+                  value={jobFormData.littleJobContext}
+                  onChange={(e) => setJobFormData(prev => ({ ...prev, littleJobContext: e.target.value }))}
+                  placeholder="e.g., Process and respond to customer inquiries efficiently"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="bg-white border border-blue-300 rounded p-3">
+                <label className="block text-sm font-medium text-blue-700 mb-1">
+                  Micro Job - Specific task (your job statement below)
+                </label>
+                <p className="text-sm text-blue-600">This is the specific job statement you define below</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Micro Job Statement */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Micro Job - Specific task when [situation], I want [outcome], so I can [goal] *
+            </label>
+            <textarea
+              value={jobFormData.statement}
+              onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
+              placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={3}
+            />
+            <p className="text-sm text-gray-500 mt-1">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
           </div>
 
           {/* Time & Frequency Tracking */}
@@ -829,23 +830,100 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     <div className="max-w-3xl mx-auto">
       <div className="bg-white rounded-lg border p-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Edit Job Statement</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Edit Micro Job Statement</h2>
           <p className="text-gray-600">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
         </div>
 
         <div className="space-y-6">
-          {/* Job Statement */}
+          {/* Persona Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Job Statement *
-            </label>
-            <textarea
-              value={jobFormData.statement}
-              onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
-              placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={3}
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
+            <div className="flex space-x-2">
+              <select
+                value={jobFormData.persona}
+                onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Select role...</option>
+                {appState.personas.map(persona => (
+                  <option key={persona.id} value={persona.id}>{persona.role}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowPersonaCreator(true)}
+                className="px-4 py-2 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 flex items-center space-x-1"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Role</span>
+              </button>
+            </div>
+
+            {/* Inline Persona Creator */}
+            {showPersonaCreator && (
+              <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-gray-900">Add New Persona</h4>
+                  <button
+                    type="button"
+                    onClick={() => setShowPersonaCreator(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
+                    <input
+                      value={newPersonaData.name}
+                      onChange={(e) => setNewPersonaData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="e.g., Sarah Chen"
+                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Role *</label>
+                    <input
+                      value={newPersonaData.role}
+                      onChange={(e) => setNewPersonaData(prev => ({ ...prev, role: e.target.value }))}
+                      placeholder="e.g., Customer Support Manager"
+                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+                  <textarea
+                    value={newPersonaData.description}
+                    onChange={(e) => setNewPersonaData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Brief description of this role and responsibilities..."
+                    rows={2}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowPersonaCreator(false)}
+                    className="px-3 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCreatePersona}
+                    disabled={!newPersonaData.name || !newPersonaData.role}
+                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add Persona
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Job Hierarchy */}
@@ -883,36 +961,26 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
 
               <div className="bg-white border border-blue-300 rounded p-3">
                 <label className="block text-sm font-medium text-blue-700 mb-1">
-                  Micro Job - Specific task (your job statement above)
+                  Micro Job - Specific task (your job statement below)
                 </label>
-                <p className="text-sm text-blue-600">This is the specific job statement you defined above</p>
+                <p className="text-sm text-blue-600">This is the specific job statement you define below</p>
               </div>
             </div>
           </div>
 
-          {/* Persona Selection */}
+          {/* Micro Job Statement */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Persona *</label>
-            <div className="flex space-x-2">
-              <select
-                value={jobFormData.persona}
-                onChange={(e) => setJobFormData(prev => ({ ...prev, persona: e.target.value }))}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select role...</option>
-                {appState.personas.map(persona => (
-                  <option key={persona.id} value={persona.id}>{persona.role}</option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => setShowPersonaCreator(true)}
-                className="px-4 py-2 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 flex items-center space-x-1"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Role</span>
-              </button>
-            </div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Micro Job - Specific task when [situation], I want [outcome], so I can [goal]
+            </label>
+            <textarea
+              value={jobFormData.statement}
+              onChange={(e) => setJobFormData(prev => ({ ...prev, statement: e.target.value }))}
+              placeholder="When I encounter a system issue, I want to quickly identify the root cause so I can resolve it efficiently..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={3}
+            />
+            <p className="text-sm text-gray-500 mt-1">Follow the JTBD format: When [situation], I want [outcome], so I can [goal]</p>
           </div>
 
           {/* Time & Frequency Tracking */}
