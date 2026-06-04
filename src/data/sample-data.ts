@@ -391,6 +391,77 @@ export const learningModules: LearningModule[] = [
   },
 
   {
+    id: 'jtbd-personas',
+    title: 'JTBD Personas: Understanding Job Executors',
+    description: 'Learn how to identify and define personas based on job execution context rather than demographics',
+    content: [
+      {
+        type: 'text',
+        content: 'JTBD personas represent the job executors - the people who actually perform the job-to-be-done in specific contexts. Unlike traditional personas focused on demographics, JTBD personas are defined by their role, circumstances, constraints, and capabilities when executing the job.'
+      },
+      {
+        type: 'text',
+        content: 'A JTBD persona captures the "who" that performs the job, but more importantly, the context in which they perform it. This includes their expertise level, available resources, time constraints, organizational context, and the specific circumstances that affect how they approach the job.'
+      },
+      {
+        type: 'text',
+        content: 'JTBD personas focus on situational attributes rather than personal characteristics. Key factors include: role and responsibilities, expertise and experience level, available tools and resources, time and budget constraints, organizational context and approval processes, and success criteria and accountability measures.'
+      },
+      {
+        type: 'text',
+        content: 'Personas matter because the same core job can be executed very differently depending on context. A "Support Specialist" resolving customer issues will have different pain points, resource needs, and success metrics than a "Sales Engineer" performing the same core job during a demo. Understanding these differences is crucial for designing targeted solutions.'
+      },
+      {
+        type: 'example',
+        content: 'JTBD Persona Examples',
+        examples: [
+          {
+            good: 'Support Specialist - Tier 1\n\n• Context: High-volume, time-pressured environment with strict SLA requirements\n• Constraints: Limited system access, must follow escalation protocols, measured on resolution time\n• Resources: Knowledge base, ticketing system, basic diagnostic tools\n• Success factors: Fast resolution, accurate triage, customer satisfaction scores\n• Pain points: Incomplete customer information, slow system responses, unclear escalation criteria\n\nSales Engineer - Enterprise\n\n• Context: Complex B2B sales cycles with multiple stakeholders and technical evaluation\n• Constraints: Limited prospect time, need executive approval for resources, competitive pressure\n• Resources: Demo environment, technical documentation, solution architects, proof-of-concept budget\n• Success factors: Technical credibility, clear business value demonstration, stakeholder consensus\n• Pain points: Unclear technical requirements, integration complexity, competitive differentiation',
+            bad: '',
+            explanation: 'These personas focus on job execution context rather than personal demographics. They capture the circumstances, constraints, and success factors that affect how each person approaches the same core job of "resolving customer issues."'
+          }
+        ]
+      },
+      {
+        type: 'text',
+        content: 'Different personas executing the same job will have different desired outcomes at each job step. For example, when "locating relevant information," a Tier 1 Support Specialist wants to minimize search time and maximize accuracy, while a Sales Engineer wants to demonstrate expertise and build credibility with prospects.'
+      },
+      {
+        type: 'text',
+        content: 'Understanding personas enables you to design role-specific solutions and identify opportunities for automation. Jobs that are routine for experts might need AI assistance for novices. High-stakes contexts might require additional validation steps that would slow down high-volume environments.'
+      }
+    ],
+    quiz: [
+      {
+        id: 'q1b',
+        question: 'What is the primary focus when defining JTBD personas?',
+        options: [
+          'Age, income, education, and lifestyle preferences of the user',
+          'Role, context, constraints, and capabilities during job execution',
+          'Company size, industry vertical, and technology stack preferences',
+          'Purchase history, brand loyalty, and communication channel preferences'
+        ],
+        correctAnswer: 1,
+        explanation: 'JTBD personas focus on the execution context - the circumstances, constraints, and capabilities that affect how someone performs the job - rather than demographic or firmographic characteristics.'
+      },
+      {
+        id: 'q1b2',
+        question: 'Why do different personas executing the same core job need different solutions?',
+        options: [
+          'Because they have different demographic profiles and personal preferences',
+          'Because they work in different industries with unique regulatory requirements',
+          'Because they have different constraints, resources, and success criteria in their execution context',
+          'Because they use different technology platforms and integration requirements'
+        ],
+        correctAnswer: 2,
+        explanation: 'Different personas have different execution contexts - varying time constraints, available resources, expertise levels, and success metrics - which require tailored approaches to the same core job.'
+      }
+    ],
+    completed: false,
+    estimatedMinutes: 14
+  },
+
+  {
     id: 'job-framework',
     title: 'Jobs-to-be-Done Needs Framework',
     description: 'Master the framework for categorizing and organizing all types of customer needs',
