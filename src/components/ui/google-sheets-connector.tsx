@@ -374,16 +374,16 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
             <h4 className="font-semibold text-blue-800 mb-2">📋 Share with {collaboratorName}:</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="font-medium text-blue-700 mb-1">1. Share Google Sheet:</p>
-                <p className="text-blue-600">Click "Open Sheet" → Share → Add {collaboratorEmail} with Editor access</p>
+                <p className="font-medium text-blue-700 mb-1">1. Access Google Sheet:</p>
+                <p className="text-blue-600">Click "Open Sheet" to view your dedicated JTBD framework sheet</p>
               </div>
               <div>
-                <p className="font-medium text-blue-700 mb-1">2. Share Website:</p>
-                <p className="text-blue-600">Send {collaboratorName} this URL: <code className="bg-blue-100 px-1 rounded text-xs">{typeof window !== 'undefined' ? window.location.origin : 'this website URL'}</code></p>
+                <p className="font-medium text-blue-700 mb-1">2. Use This App:</p>
+                <p className="text-blue-600">Build your framework here: <code className="bg-blue-100 px-1 rounded text-xs">{typeof window !== 'undefined' ? window.location.origin : 'this website URL'}</code></p>
               </div>
             </div>
             <p className="text-xs text-blue-500 mt-2">
-              ✅ {collaboratorName} can then use this app to build the framework, and all changes sync to the shared Google Sheet in real-time!
+              ✅ Use this app to build your JTBD framework. Copy completed sections to your Google Sheet for collaboration and documentation.
             </p>
             <button
               onClick={() => {
