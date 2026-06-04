@@ -1,26 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { google } from 'googleapis';
 
-// MCP Server Configuration
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+// Initialize Google Auth
+async function getGoogleAuth() {
+  try {
+    let auth;
 
-async function mcpCall(method: string, params: any) {
-  const response = await fetch(`${MCP_SERVER_URL}/mcp/call`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ method, params })
-  });
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+      // Production: Use service account JSON from environment variable
+      const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+      auth = new google.auth.GoogleAuth({
+        credentials,
+        scopes: [
+          'https://www.googleapis.com/auth/spreadsheets',
+          'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/drive.file'
+        ]
+      });
+    } else {
+      // Development: Use application default credentials (gcloud auth)
+      auth = new google.auth.GoogleAuth({
+        scopes: [
+          'https://www.googleapis.com/auth/spreadsheets',
+          'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/drive.file'
+        ]
+      });
+    }
 
-  if (!response.ok) {
-    throw new Error(`MCP call failed: ${response.status} ${response.statusText}`);
+    const authClient = await auth.getClient();
+    return authClient;
+  } catch (error) {
+    console.error('Failed to initialize Google Auth:', error);
+    throw new Error('Google authentication failed');
   }
-
-  const result = await response.json();
-
-  if (!result.content || !result.content[0] || !result.content[0].text) {
-    throw new Error(`Invalid MCP response format`);
-  }
-
-  return result.content[0].text;
 }
 
 export async function POST(request: NextRequest) {
@@ -38,6 +51,10 @@ export async function POST(request: NextRequest) {
     console.log(`Syncing to sheet "${sheet_name}" in spreadsheet ${spreadsheet_id}:`);
     console.log(`Rows: ${data.length}, Columns: ${data[0]?.length || 0}`);
 
+    // Initialize Google Sheets API
+    const authClient = await getGoogleAuth();
+    const sheets = google.sheets({ version: 'v4', auth: authClient });
+
     // Calculate the range based on data dimensions
     const numRows = data.length;
     const numCols = data[0]?.length || 0;
@@ -45,18 +62,19 @@ export async function POST(request: NextRequest) {
     const range = `${sheet_name}!A1:${endCol}${numRows}`;
 
     // Clear existing data first (optional - removes old data)
-    await mcpCall('mcp__google-workspace__modify_sheet_values', {
-      spreadsheet_id: spreadsheet_id,
-      range_name: `${sheet_name}!A:Z`, // Clear wide range
-      clear_values: true
+    await sheets.spreadsheets.values.clear({
+      spreadsheetId: spreadsheet_id,
+      range: `${sheet_name}!A:Z` // Clear wide range
     });
 
-    // Write new data using MCP
-    const mcpResult = await mcpCall('mcp__google-workspace__modify_sheet_values', {
-      spreadsheet_id: spreadsheet_id,
-      range_name: range,
-      values: data,
-      value_input_option: 'USER_ENTERED'
+    // Write new data
+    const updateResult = await sheets.spreadsheets.values.update({
+      spreadsheetId: spreadsheet_id,
+      range: range,
+      valueInputOption: 'USER_ENTERED',
+      resource: {
+        values: data
+      }
     });
 
     const result = {
@@ -64,13 +82,25 @@ export async function POST(request: NextRequest) {
       message: `Successfully synced ${data.length} rows to "${sheet_name}"`,
       timestamp: new Date().toISOString(),
       range: range,
-      mcpResponse: mcpResult
+      updatedRows: updateResult.data.updatedRows,
+      updatedColumns: updateResult.data.updatedColumns,
+      updatedCells: updateResult.data.updatedCells
     };
 
     return NextResponse.json(result);
 
   } catch (error) {
     console.error('Failed to sync data:', error);
+
+    // Check for authentication errors
+    if (error instanceof Error && error.message.includes('authentication')) {
+      return NextResponse.json({
+        error: 'Google authentication failed',
+        message: 'Please configure GOOGLE_SERVICE_ACCOUNT_KEY environment variable with your service account JSON.',
+        suggestion: 'Create a Google Cloud service account and add the JSON key to your environment variables.'
+      }, { status: 401 });
+    }
+
     return NextResponse.json(
       {
         error: 'Failed to sync data to spreadsheet',

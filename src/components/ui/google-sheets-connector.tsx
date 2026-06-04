@@ -37,18 +37,18 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
 
       if (!response.ok) {
         const errorData = await response.json();
-        if (response.status === 503) {
-          // MCP server not available
-          throw new Error(errorData.message || 'Google Sheets integration requires local development environment');
+        if (response.status === 401) {
+          // Google authentication failed
+          throw new Error(errorData.message || 'Google authentication failed. Please check server configuration.');
         }
-        throw new Error(`Failed to create spreadsheet: ${response.statusText}`);
+        throw new Error(errorData.details || `Failed to create spreadsheet: ${response.statusText}`);
       }
 
       const result = await response.json();
 
-      // Check for MCP unavailability error
-      if (result.error && result.error.includes('MCP')) {
-        throw new Error(result.message || 'Google Sheets integration requires local development environment');
+      // Check for authentication errors
+      if (result.error && result.error.includes('authentication')) {
+        throw new Error(result.message || 'Google authentication failed. Please check server configuration.');
       }
 
       // Parse the spreadsheet info (MCP returns text, need to extract ID and URL)
