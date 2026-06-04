@@ -54,7 +54,8 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
     };
 
     autoConnectAlgolia();
-  }, [appState.googleSheetsConnected]); // Only run when connection status might change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appState.googleSheetsConnected]); // Only run when connection status changes - other deps intentionally excluded
 
   const createNewSpreadsheet = async () => {
     setIsConnecting(true);

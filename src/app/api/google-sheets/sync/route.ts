@@ -168,7 +168,7 @@ async function createJWT(credentials: any): Promise<string> {
 
 function base64UrlEncode(data: string | ArrayBuffer): string {
   const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
-  const base64 = btoa(String.fromCharCode(...bytes));
+  const base64 = btoa(String.fromCharCode.apply(null, Array.from(bytes) as any));
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
