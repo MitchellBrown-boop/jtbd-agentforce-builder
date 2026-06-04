@@ -313,6 +313,14 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
   };
 
   if (appState.googleSheetsConnected) {
+    // Calculate user-created data counts (excluding examples)
+    const exampleJobIds = ['sarah-pain-points', 'jordan-workflow', 'alex-integrations'];
+    const examplePersonaIds = ['sarah-chen', 'jordan-patel', 'alex-rivera'];
+    const exampleAgentIds = ['cust-svc-agent', 'sales-agent', 'ops-agent', 'analytics-agent', 'integration-agent'];
+
+    const userJobsCount = appState.jobs.filter(job => !exampleJobIds.includes(job.id)).length;
+    const userPersonasCount = appState.personas.filter(persona => !examplePersonaIds.includes(persona.id)).length;
+    const userAgentsCount = appState.agentOpportunities.filter(agent => !exampleAgentIds.includes(agent.id)).length;
     return (
       <div className="bg-green-50 border border-green-200 rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
@@ -358,15 +366,15 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div className="bg-white rounded p-3 border border-green-100">
             <div className="font-medium text-gray-900">Jobs Framework</div>
-            <div className="text-gray-600">{appState.jobs.length} jobs synced</div>
+            <div className="text-gray-600">{userJobsCount} jobs synced</div>
           </div>
           <div className="bg-white rounded p-3 border border-green-100">
             <div className="font-medium text-gray-900">Personas</div>
-            <div className="text-gray-600">{appState.personas.length} personas synced</div>
+            <div className="text-gray-600">{userPersonasCount} personas synced</div>
           </div>
           <div className="bg-white rounded p-3 border border-green-100">
             <div className="font-medium text-gray-900">Agent Opportunities</div>
-            <div className="text-gray-600">{appState.agentOpportunities.length} agents synced</div>
+            <div className="text-gray-600">{userAgentsCount} agents synced</div>
           </div>
         </div>
 
