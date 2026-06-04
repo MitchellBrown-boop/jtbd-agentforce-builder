@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AppState, JTBDJob, Persona, AgentOpportunity } from '@/lib/types';
 import { Sheet, ExternalLink, Plus, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { ALGOLIA_CONFIG, isAlgoliaDeployment } from '@/lib/algolia-config';
 
 interface GoogleSheetsConnectorProps {
   appState: AppState;
@@ -25,7 +26,32 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
     setError('');
 
     try {
-      // Create new spreadsheet with the MCP Google Workspace tool
+      // Check if this is Algolia deployment - use pre-created sheet
+      if (isAlgoliaDeployment() && ALGOLIA_CONFIG.GOOGLE_SHEET_ID !== 'PASTE_SPREADSHEET_ID_HERE') {
+        // Use pre-configured Algolia sheet
+        const spreadsheetId = ALGOLIA_CONFIG.GOOGLE_SHEET_ID;
+        const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+
+        setSpreadsheetId(spreadsheetId);
+        setSpreadsheetUrl(spreadsheetUrl);
+
+        // Set pre-configured collaborator info
+        setCollaboratorName(ALGOLIA_CONFIG.COLLABORATOR_NAME);
+        setCollaboratorEmail(ALGOLIA_CONFIG.COLLABORATOR_EMAIL);
+
+        updateAppState({
+          googleSheetsConnected: true,
+          currentWorkshopId: spreadsheetId
+        });
+
+        // Auto-sync initial data
+        await syncToSheets(spreadsheetId);
+
+        setIsConnecting(false);
+        return;
+      }
+
+      // Regular flow for non-Algolia deployments
       const response = await fetch('/api/google-sheets/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,7 +77,7 @@ export default function GoogleSheetsConnector({ appState, updateAppState }: Goog
         throw new Error(result.message || 'Google authentication failed. Please check server configuration.');
       }
 
-      // Parse the spreadsheet info (MCP returns text, need to extract ID and URL)
+      // Parse the spreadsheet info
       const idMatch = result.data.match(/ID: ([a-zA-Z0-9-_]+)/);
       const urlMatch = result.data.match(/URL: (https:\/\/docs\.google\.com\/spreadsheets\/[^\s]+)/);
 
