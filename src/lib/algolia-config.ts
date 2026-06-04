@@ -27,7 +27,20 @@ export function isAlgoliaDeployment(): boolean {
 
   // Check if URL contains algolia-specific domain or path
   const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
+
+  // For testing: log detection criteria
+  console.log('Algolia Detection Check:', {
+    hostname,
+    pathname,
+    hostnameIncludesAlgolia: hostname.includes('algolia'),
+    pathnameIncludesAlgolia: pathname.includes('/algolia'),
+    searchParams: window.location.search
+  });
+
+  // Check URL patterns OR query parameter for testing
   return hostname.includes('algolia') ||
          hostname.includes('algolia-jtbd') ||
-         window.location.pathname.includes('/algolia');
+         pathname.includes('/algolia') ||
+         window.location.search.includes('algolia=true');
 }
