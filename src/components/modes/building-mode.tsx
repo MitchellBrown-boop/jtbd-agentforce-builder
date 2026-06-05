@@ -5,7 +5,6 @@ import { useState } from 'react';
 // import { motion, AnimatePresence } from 'framer-motion';
 import { AppState, JTBDJob, Persona } from '@/lib/types';
 import { Plus, Edit, Trash2, User, Target, Zap, CheckCircle, AlertCircle, Lightbulb, ArrowLeft } from 'lucide-react';
-import GoogleSheetsConnector from '@/components/ui/google-sheets-connector';
 import { getVisiblePersonas, getVisibleJobs, getVisibleAgentOpportunities, isShowingSampleData } from '@/lib/data-utils';
 
 interface BuildingModeProps {
@@ -254,19 +253,17 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
 
         <div className="bg-white rounded-lg border p-6">
           <div className="flex items-center space-x-3">
-            <CheckCircle className={`w-8 h-8 ${appState.googleSheetsConnected ? 'text-green-600' : 'text-gray-400'}`} />
+            <CheckCircle className="w-8 h-8 text-green-600" />
             <div>
-              <p className="text-sm font-medium text-gray-900">Google Sheets</p>
-              <p className={`text-sm ${appState.googleSheetsConnected ? 'text-green-600' : 'text-gray-600'}`}>
-                {appState.googleSheetsConnected ? 'Connected' : 'Not Connected'}
+              <p className="text-sm font-medium text-gray-900">Salesforce Sync</p>
+              <p className="text-sm text-green-600">
+                Active - Data saves automatically
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Google Sheets Integration */}
-      <GoogleSheetsConnector appState={appState} updateAppState={updateAppState} />
 
       {/* Quick Actions */}
       <div className="flex space-x-4">
