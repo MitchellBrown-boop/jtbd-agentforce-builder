@@ -24,10 +24,11 @@ export default async function handler(req, res) {
       SALESFORCE_CALLBACK_URL
     } = process.env;
 
-    // Extract code verifier from cookie
-    const codeVerifier = req.cookies.sf_code_verifier;
-    if (!codeVerifier) {
-      return res.status(400).json({ error: 'Code verifier not found' });
+    // Verify state for CSRF protection
+    const state = req.query.state;
+    const savedState = req.cookies.sf_oauth_state;
+    if (!state || state !== savedState) {
+      return res.status(400).json({ error: 'Invalid state parameter' });
     }
 
     // Exchange authorization code for access token
@@ -42,8 +43,7 @@ export default async function handler(req, res) {
         code: code,
         client_id: SALESFORCE_CLIENT_ID,
         client_secret: SALESFORCE_CLIENT_SECRET,
-        redirect_uri: SALESFORCE_CALLBACK_URL,
-        code_verifier: codeVerifier
+        redirect_uri: SALESFORCE_CALLBACK_URL
       })
     });
 
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
       `sf_refresh_token=${tokens.refresh_token}; ${cookieOptions}`,
       `sf_instance_url=${tokens.instance_url}; ${cookieOptions}`,
       `sf_user_id=${extractUserIdFromId(tokens.id)}; ${cookieOptions}`,
-      'sf_code_verifier=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0' // Clear code verifier
+      'sf_oauth_state=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0' // Clear state
     ]);
 
     // Redirect to main app with success indicator
