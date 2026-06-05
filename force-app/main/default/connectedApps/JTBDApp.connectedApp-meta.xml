@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>JTBD Vercel App</label>
     <contactEmail>trailsignup.1a4a15bf9f4ce3@salesforce.com</contactEmail>
     <description>Connected App for JTBD Interactive Builder web application to enable REST API access for creating and managing JTBD jobs, personas, and agent opportunities</description>
-
+    <label>JTBD Interactive Builder 2026</label>
     <oauthConfig>
         <callbackUrl>https://algolia-jtbd.vercel.app/auth/callback</callbackUrl>
+        <consumerKey>3MVG9dAEux2v1sLv_AFuTq1buY.mgEyDfXRjppBLwWaON0qup_iAgrqRDUFhPnvIrW5uE9FH4jD.7R8lgwJgc</consumerKey>
         <isAdminApproved>true</isAdminApproved>
+        <isClientCredentialEnabled>false</isClientCredentialEnabled>
+        <isCodeCredentialEnabled>false</isCodeCredentialEnabled>
+        <isCodeCredentialPostOnly>false</isCodeCredentialPostOnly>
         <isConsumerSecretOptional>true</isConsumerSecretOptional>
         <isIntrospectAllTokens>false</isIntrospectAllTokens>
-
-        <!-- Core API Access for REST operations -->
+        <isNamedUserJwtEnabled>false</isNamedUserJwtEnabled>
+        <isPkceRequired>false</isPkceRequired>
+        <isRefreshTokenRotationEnabled>false</isRefreshTokenRotationEnabled>
+        <isSecretRequiredForRefreshToken>false</isSecretRequiredForRefreshToken>
+        <isSecretRequiredForTokenExchange>false</isSecretRequiredForTokenExchange>
+        <isTokenExchangeEnabled>false</isTokenExchangeEnabled>
+        <scopes>Basic</scopes>
         <scopes>Api</scopes>
-        <scopes>RefreshToken</scopes>
         <scopes>Web</scopes>
-
-        <!-- OpenID Connect for user identity -->
+        <scopes>RefreshToken</scopes>
         <scopes>OpenID</scopes>
         <scopes>Profile</scopes>
         <scopes>Email</scopes>
     </oauthConfig>
-
     <oauthPolicy>
         <ipRelaxation>ENFORCE</ipRelaxation>
+        <isTokenExchangeFlowEnabled>false</isTokenExchangeFlowEnabled>
         <refreshTokenPolicy>infinite</refreshTokenPolicy>
+        <singleLogoutUrl>https://algolia-jtbd.vercel.app</singleLogoutUrl>
     </oauthPolicy>
-
-    <!-- Session Policy -->
     <sessionPolicy>
         <sessionTimeout>120</sessionTimeout>
     </sessionPolicy>
