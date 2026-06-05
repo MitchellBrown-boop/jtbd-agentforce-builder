@@ -1,33 +1,39 @@
 # JTBD Interactive Builder - Development Progress
 
 ## Session Complete: 2026-06-05
-**Status**: CRITICAL BLOCKER - Salesforce Field Deployment Failure
+**Status**: ✅ SALESFORCE INTEGRATION READY - Critical Blocker Resolved & Connected App Deployed
 
 ---
 
 ## ✅ COMPLETED THIS SESSION
 
-### 1. Salesforce Data Storage Configuration (PARTIAL SUCCESS)
-- **Custom Objects Created**: 3 objects deployed successfully and accessible
-  - `JTBD_Job__c`: Main job tracking object with search, reports, activities, history enabled
-  - `JTBD_Persona__c`: Persona definitions object with user-facing features
-  - `Agent_Opportunity__c`: AI agent opportunities tracking object
-- **Custom Fields Created**: 22 fields generated with proper metadata structure
-  - Job_Statement__c, Job_Type__c, Persona__c (lookup), Pain_Points__c, Success_Metrics__c, etc.
-  - All fields follow Salesforce naming conventions and field type constraints
-  - LongTextArea fields with proper length (32768) and visibility settings
+### 1. CRITICAL BLOCKER RESOLVED - Field Accessibility Fixed ✅
+- **Root Cause Identified**: Field-Level Security (FLS) permissions issue, not deployment failure
+- **Resolution**: Mitchell updated field accessibility permissions in algolia-demo org
+- **Validation Confirmed**: All 22 custom fields now accessible via SOQL queries
+- **Field Access Status**: 100% success rate (previously 4.5%)
+  - ✅ **WORKING**: All LongTextArea, Picklist, Lookup, Text, and Number fields
+  - ✅ **CONFIRMED**: Job_Statement__c, Pain_Points__c, Description__c, Priority__c, etc.
 
-### 2. Salesforce Deployment Infrastructure
-- **SFDX Project Structure**: Created proper `sfdx-project.json` configuration
-- **Metadata Organization**: Proper directory structure under `force-app/main/default/`
-- **Phased Deployment**: Objects first, then fields to handle dependencies
-- **Target Org Configured**: algolia-demo org validated and accessible
+### 2. Connected App Deployment Complete ✅
+- **OAuth App Created**: JTBDApp Connected App successfully deployed to algolia-demo org
+- **Authentication Flow**: Authorization Code + PKCE for secure web app integration
+- **API Scopes Configured**: Api, RefreshToken, Web, OpenID, Profile, Email
+- **Security Settings**: HTTPS callbacks required, IP enforcement enabled
+- **Deployment ID**: 09HgL00000TldwVUAR (Created successfully)
 
-### 3. Deployment Validation and Troubleshooting
-- **Multiple Deployment Approaches**: Dry-run validation, full deployment, targeted field deployment
-- **Retrieve Operations**: Successfully pulled metadata from org to verify deployment state
-- **SOQL Validation**: Extensive testing to confirm field accessibility
-- **Error Analysis**: Systematic investigation of deployment vs. accessibility mismatch
+### 3. Salesforce REST API Infrastructure Ready ✅
+- **Custom Objects**: 3 objects deployed and accessible
+  - `JTBD_Job__c`: Main job tracking with 10 custom fields
+  - `JTBD_Persona__c`: Persona definitions with 6 custom fields  
+  - `Agent_Opportunity__c`: Agent opportunities with 6 custom fields
+- **API Endpoints Available**: Ready for CRUD operations via REST API v60.0
+- **Authentication**: Connected App provides Consumer Key/Secret for OAuth flow
+
+### 4. Salesforce Deployment Infrastructure (Previous Session)
+- **SFDX Project Structure**: Complete `force-app/main/default/` organization
+- **Metadata Organization**: Objects, fields, and Connected App properly structured  
+- **Target Org**: algolia-demo org validated and operational
 
 ---
 
@@ -69,41 +75,35 @@
 
 ## 🔄 IN FLIGHT
 
-### 1. CRITICAL BLOCKER: Salesforce Field Deployment Validation Failure
-**Current State**: Objects deployed successfully, but 21 of 22 custom fields not accessible
+### 1. Web Application Salesforce Integration (READY TO IMPLEMENT)
+**Current State**: All infrastructure deployed and operational - ready for OAuth integration
 
-**Problem Description**:
-- All deployment operations report SUCCESS (dry-run validation, full deployment, targeted field deployment)
-- Custom objects (JTBD_Job__c, JTBD_Persona__c, Agent_Opportunity__c) are fully accessible via SOQL
-- Only Job_Type__c field (Picklist) is accessible via SOQL queries
-- All other custom fields fail with "No such column" errors despite successful deployment reports
-- Metadata retrieve operations successfully pull field definitions, indicating metadata exists but fields aren't activated
+**Integration Architecture**:
+- **Connected App**: JTBDApp deployed with Consumer Key/Secret available
+- **OAuth Flow**: Authorization Code + PKCE for secure authentication
+- **API Access**: REST API v60.0 with full CRUD permissions on custom objects
+- **Development Challenge**: HTTPS required for callbacks (localhost needs ngrok or SSL cert)
 
-**Field Status**:
-- ✅ **WORKING**: Job_Type__c (Picklist field)
-- ❌ **FAILING**: 21 fields including Job_Statement__c, Pain_Points__c, Success_Metrics__c (primarily LongTextArea and Lookup types)
+**Implementation Options**:
+- **Option A**: Add Salesforce OAuth alongside Google Sheets (dual storage)
+- **Option B**: Replace Google Sheets with Salesforce REST API (unified storage)
+- **Option C**: Hybrid approach with data synchronization between systems
 
-**Investigation Completed**:
-- Verified target org connectivity and proper SFDX project structure
-- Confirmed deployment dependency ordering (objects before fields)  
-- Tested multiple deployment scopes (source-dir, metadata-specific, manifest-based)
-- Analyzed sobject describe output showing only working field in schema
-- Ruled out deployment timing or cache issues through multiple approaches
+**Technical Requirements**:
+- Get Consumer Key/Secret from Salesforce Setup → App Manager → JTBDApp → View
+- Install jsforce SDK: `npm install jsforce`  
+- Set up HTTPS development environment (ngrok recommended)
+- Configure environment variables for Salesforce credentials
 
-**Root Cause Hypothesis**: Field-level deployment activation issue, possibly related to:
-- LongTextArea field type deployment requirements not met
-- Field-level security permissions missing for current user profile  
-- Org-specific deployment validation requirements
-
-### 2. Multi-Customer Deployment Architecture (ON HOLD - BLOCKED BY SALESFORCE ISSUE)
+### 2. Multi-Customer Deployment Architecture (UNBLOCKED - READY TO RESUME)
 **Current State**: Plan updated in `/Users/mitchellbrown/.claude/plans/does-this-google-sheet-hashed-rose.md`
 
-**Platform Decision**: Vercel selected for multi-customer deployment (updated from Railway)
+**Platform Decision**: Vercel selected for multi-customer deployment
 - **Architecture**: Separate Vercel projects per customer with custom domains
-- **Approach**: Single GitHub repo with customer-specific environment variables
-- **Deployment**: Customer-specific branding and sample data per instance
+- **Data Storage**: Now Salesforce-backed instead of Google Sheets only
+- **Deployment**: Customer-specific branding, sample data, and Salesforce org connections
 
-**BLOCKED BY**: Must resolve Salesforce field deployment issue before proceeding with data storage integration
+**Next Decision Required**: Integration approach (dual storage vs. Salesforce-only vs. hybrid)
 
 ### 3. Transcript Processing Feature (INDEXED FOR V2)
 
@@ -111,46 +111,53 @@
 
 ## 🎯 EXACT RESUME INSTRUCTIONS
 
-### URGENT PRIORITY: Resolve Salesforce Field Deployment Blocker
+### PRIORITY: Implement Salesforce OAuth Integration in Web Application
 
-**Step 1: Investigate Field-Level Security** (15 minutes)
+**Step 1: Retrieve Connected App Credentials** (5 minutes)
+1. Access Salesforce Setup in algolia-demo org: https://trailsignup-1a4a15bf9f4ce3.my.salesforce.com
+2. Navigate to **Setup** → **App Manager**  
+3. Find "JTBD App" → **View**
+4. Copy **Consumer Key** and **Consumer Secret**
+
+**Step 2: Choose Integration Approach** (5 minutes)
+**Decision Required**: How to integrate Salesforce with existing Google Sheets functionality?
+- **Option A**: Dual storage (keep Google Sheets + add Salesforce sync)
+- **Option B**: Replace Google Sheets entirely with Salesforce REST API
+- **Option C**: Hybrid with user choice of storage backend
+
+**Step 3: Set Up Development HTTPS** (10 minutes)
 ```bash
-# Check current user profile permissions for custom fields
-sf data query --target-org algolia-demo --json --query "SELECT Id, Name FROM Profile WHERE Name LIKE '%Admin%'"
-sf data query --target-org algolia-demo --json --query "SELECT PermissionsModifyAllData, PermissionsCustomizeApplication FROM User WHERE Username = 'trailsignup.1a4a15bf9f4ce3@salesforce.com'"
-
-# Examine field-level security for failing fields
-sf sobject describe --target-org algolia-demo --json --sobject JTBD_Job__c | grep -A 10 -B 10 "Job_Statement__c"
+# Salesforce requires HTTPS callbacks - use ngrok for development
+npm install -g ngrok
+cd /Users/mitchellbrown/workspace/FY27/projects/Jobs\ To\ Be\ Done
+npm run dev  # Start app on localhost:3001
+# In new terminal:
+ngrok http 3001
+# Copy the ngrok HTTPS URL for callback configuration
 ```
 
-**Step 2: Force Field Recreation** (20 minutes)
+**Step 4: Install Salesforce SDK and Configure** (15 minutes)
 ```bash
-# Delete problematic field metadata and recreate from scratch
-rm force-app/main/default/objects/JTBD_Job__c/fields/Job_Statement__c.field-meta.xml
-
-# Use /generating-custom-field skill to recreate Job_Statement__c with potential fixes:
-# - Change from LongTextArea to Text (255 max) for initial test
-# - Ensure no required=true flag
-# - Verify proper field naming convention
+npm install jsforce
+# Create .env.local with credentials from Step 1:
+echo "SALESFORCE_CLIENT_ID=<Consumer Key>" >> .env.local
+echo "SALESFORCE_CLIENT_SECRET=<Consumer Secret>" >> .env.local
+echo "SALESFORCE_INSTANCE_URL=https://trailsignup-1a4a15bf9f4ce3.my.salesforce.com" >> .env.local
+echo "SALESFORCE_CALLBACK_URL=<ngrok-https-url>/auth/callback" >> .env.local
 ```
 
-**Step 3: Test Alternative Deployment Strategy** (10 minutes)
-```bash
-# Try deploying single field with explicit wait and verification
-sf project deploy start --metadata CustomField:JTBD_Job__c.Job_Statement__c --target-org algolia-demo --wait 60 --json
-# Immediately test accessibility
-sf data query --target-org algolia-demo --json --query "SELECT Id, Name, Job_Statement__c FROM JTBD_Job__c LIMIT 1"
-```
+**Step 5: Implement OAuth Flow** (30 minutes)
+Based on integration approach chosen in Step 2:
+- Create `/pages/api/auth/salesforce.js` OAuth initiation endpoint
+- Create `/pages/api/auth/callback.js` callback handler  
+- Add Salesforce authentication button to UI
+- Implement token storage and refresh logic
 
-**Step 4: Escalation Path** (if above fails)
-- Check Salesforce Known Issues for API version 66.0 LongTextArea deployment
-- Consider using Salesforce UI to manually create one field and compare metadata structure
-- Test with a fresh scratch org to isolate org-specific vs. metadata-specific issues
-
-**SUCCESS CRITERIA**: 
-- Job_Statement__c accessible via SOQL query
-- Clear resolution path identified for remaining 20 fields
-- Can proceed with multi-customer deployment planning
+**SUCCESS CRITERIA**:
+- User can authenticate with Salesforce via OAuth
+- Web app can create/read JTBD records via REST API
+- New jobs appear in both web app and Salesforce org
+- Clear path forward for multi-customer deployment
 
 ### Current Application Status
 - **Running**: http://localhost:3001 (V1 complete - Google Sheets integration)
@@ -159,20 +166,22 @@ sf data query --target-org algolia-demo --json --query "SELECT Id, Name, Job_Sta
 - **Branch**: `main` (presentation-ready)
 - **Backup**: `backup/pre-transcript-processing` (safety net)
 
-### Current Salesforce Development Status
+### Current Salesforce Development Status  
 - **Target Org**: algolia-demo (trailsignup-1a4a15bf9f4ce3@salesforce.com)
 - **SFDX Project**: `/Users/mitchellbrown/workspace/FY27/projects/Jobs To Be Done/`
 - **Objects Status**: ✅ 3 custom objects deployed and accessible
-- **Fields Status**: ❌ CRITICAL - Only 1 of 22 custom fields accessible (deployment validation failure)
+- **Fields Status**: ✅ All 22 custom fields accessible via SOQL (FLS issue resolved)
+- **Connected App**: ✅ JTBDApp deployed with OAuth configuration (ID: 09HgL00000TldwVUAR)
 
 ### Key Files for Salesforce Integration
 - **SFDX Config**: `sfdx-project.json` (package directories)
-- **Custom Objects**: `force-app/main/default/objects/*/`
-  - `JTBD_Job__c/JTBD_Job__c.object-meta.xml` ✅ 
-  - `JTBD_Persona__c/JTBD_Persona__c.object-meta.xml` ✅
-  - `Agent_Opportunity__c/Agent_Opportunity__c.object-meta.xml` ✅
-- **Custom Fields**: `force-app/main/default/objects/*/fields/` ❌ 21 of 22 fields inaccessible
-- **Skills Used**: `/generating-custom-object`, `/generating-custom-field`, `/sf-deploy`, `/sf-soql`
+- **Custom Objects**: `force-app/main/default/objects/*/` ✅ 
+  - `JTBD_Job__c/JTBD_Job__c.object-meta.xml` (10 fields)
+  - `JTBD_Persona__c/JTBD_Persona__c.object-meta.xml` (6 fields)
+  - `Agent_Opportunity__c/Agent_Opportunity__c.object-meta.xml` (6 fields)
+- **Connected App**: `force-app/main/default/connectedApps/JTBDApp.connectedApp-meta.xml` ✅
+- **API Endpoints Ready**: REST API v60.0 for all custom objects
+- **Skills Used**: `/generating-custom-object`, `/generating-custom-field`, `/sf-deploy`, `/sf-soql`, `/sf-connected-apps`
 
 ---
 
@@ -184,12 +193,14 @@ sf data query --target-org algolia-demo --json --query "SELECT Id, Name, Job_Sta
 - **Building Mode**: Full JTBD creation workflow with hierarchical context ✅
 - **Presenting Mode**: Executive time analysis with persona rankings ✅
 - **Google Sheets Integration**: Basic sync operational ✅
-- **Salesforce Integration**: BLOCKED ❌ (field deployment validation failure)
+- **Salesforce Infrastructure**: 100% deployed and ready ✅ (awaiting web app integration)
 
 ### Salesforce Development Status  
 - **Custom Objects**: 3/3 deployed and accessible ✅
-- **Custom Fields**: 1/22 accessible (4.5% success rate) ❌
-- **SOQL Validation**: Objects queryable, fields inaccessible ❌
+- **Custom Fields**: 22/22 accessible (100% success rate) ✅
+- **SOQL Validation**: Objects and fields fully queryable ✅
+- **Connected App**: OAuth authentication configured ✅
+- **REST API**: Ready for CRUD operations ✅
 - **Metadata Structure**: Proper naming conventions and types ✅  
 - **Deployment Pipeline**: SFDX project configured ✅
 
@@ -206,15 +217,15 @@ sf data query --target-org algolia-demo --json --query "SELECT Id, Name, Job_Sta
 ## 🚀 SUCCESS METRICS
 
 **Current Status**: V1 application complete with Google Sheets integration ✅  
-**Critical Blocker**: Salesforce field deployment validation failure ❌
+**Salesforce Infrastructure**: Complete and operational ✅ (field accessibility resolved, Connected App deployed)
 
-**Immediate Priority**: Resolve Salesforce custom field accessibility issue preventing data storage migration from Google Sheets to Salesforce platform
+**Immediate Priority**: Implement OAuth integration in web application to enable Salesforce REST API functionality
 
-**Next Phase**: Multi-customer deployment capability (blocked until Salesforce integration resolved)
+**Next Phase**: Multi-customer deployment capability with Salesforce backend (unblocked and ready)
 
 **Long-term Vision**: Industry-standard JTBD framework builder with enterprise Salesforce integration, AI-powered transcript processing, and multi-customer deployment
 
 ---
 
 *Last Updated: 2026-06-05 by Claude Sonnet 4*  
-*Next Session: URGENT - Resolve Salesforce field deployment blocker*
+*Next Session: Implement Salesforce OAuth integration in Next.js web application*
