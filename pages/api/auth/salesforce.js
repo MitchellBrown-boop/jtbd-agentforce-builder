@@ -1,5 +1,5 @@
 // Salesforce OAuth initiation endpoint
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -14,24 +14,29 @@ export default function handler(req, res) {
     return res.status(500).json({ error: 'Missing Salesforce configuration' });
   }
 
-  // Generate PKCE challenge (for enhanced security)
-  const codeVerifier = generateCodeVerifier();
-  const codeChallenge = generateCodeChallenge(codeVerifier);
+  try {
+    // Generate PKCE challenge (for enhanced security)
+    const codeVerifier = generateCodeVerifier();
+    const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-  // Store code verifier in session/cookie for callback verification
-  res.setHeader('Set-Cookie', `sf_code_verifier=${codeVerifier}; HttpOnly; Secure; SameSite=Strict; Path=/`);
+    // Store code verifier in session/cookie for callback verification
+    res.setHeader('Set-Cookie', `sf_code_verifier=${codeVerifier}; HttpOnly; Secure; SameSite=Strict; Path=/`);
 
-  // Salesforce OAuth authorization URL
-  const authUrl = new URL(`${SALESFORCE_INSTANCE_URL}/services/oauth2/authorize`);
-  authUrl.searchParams.set('response_type', 'code');
-  authUrl.searchParams.set('client_id', SALESFORCE_CLIENT_ID);
-  authUrl.searchParams.set('redirect_uri', SALESFORCE_CALLBACK_URL);
-  authUrl.searchParams.set('scope', 'api refresh_token web openid profile email');
-  authUrl.searchParams.set('code_challenge', codeChallenge);
-  authUrl.searchParams.set('code_challenge_method', 'S256');
-  authUrl.searchParams.set('state', generateState()); // CSRF protection
+    // Salesforce OAuth authorization URL
+    const authUrl = new URL(`${SALESFORCE_INSTANCE_URL}/services/oauth2/authorize`);
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('client_id', SALESFORCE_CLIENT_ID);
+    authUrl.searchParams.set('redirect_uri', SALESFORCE_CALLBACK_URL);
+    authUrl.searchParams.set('scope', 'api refresh_token web openid profile email');
+    authUrl.searchParams.set('code_challenge', codeChallenge);
+    authUrl.searchParams.set('code_challenge_method', 'S256');
+    authUrl.searchParams.set('state', generateState()); // CSRF protection
 
-  res.redirect(302, authUrl.toString());
+    res.redirect(302, authUrl.toString());
+  } catch (error) {
+    console.error('OAuth initiation error:', error);
+    res.status(500).json({ error: 'OAuth initiation failed' });
+  }
 }
 
 // PKCE utilities
@@ -48,15 +53,15 @@ function generateCodeVerifier() {
   return base64URLEncode(array);
 }
 
-function generateCodeChallenge(verifier) {
+async function generateCodeChallenge(verifier) {
   const encoder = new TextEncoder();
   const data = encoder.encode(verifier);
   if (typeof crypto !== 'undefined' && crypto.subtle) {
-    return crypto.subtle.digest('SHA-256', data)
-      .then(digest => base64URLEncode(new Uint8Array(digest)));
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    return base64URLEncode(new Uint8Array(digest));
   }
-  // For environments without crypto.subtle, use the verifier as-is (less secure)
-  return Promise.resolve(verifier);
+  // For environments without crypto.subtle, use base64URL of the verifier
+  return base64URLEncode(new TextEncoder().encode(verifier));
 }
 
 function generateState() {
