@@ -49,7 +49,6 @@ export interface AppState {
   jobs: JTBDJob[];
   personas: Persona[];
   agentOpportunities: AgentOpportunity[];
-  googleSheetsConnected: boolean;
   currentWorkshopId?: string;
 }
 

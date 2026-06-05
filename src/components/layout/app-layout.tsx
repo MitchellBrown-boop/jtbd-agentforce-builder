@@ -10,7 +10,9 @@ import ModeNavigation from './mode-navigation';
 import LearningMode from '@/components/modes/learning-mode';
 import BuildingMode from '@/components/modes/building-mode';
 import PresentingMode from '@/components/modes/presenting-mode';
-import { Book, Wrench, Presentation } from 'lucide-react';
+import SalesforceAuth from '@/components/auth/salesforce-auth';
+import { useSalesforceData } from '@/hooks/useSalesforceData';
+import { Book, Wrench, Presentation, Loader2 } from 'lucide-react';
 
 const modeConfig = {
   learning: {
@@ -72,42 +74,87 @@ const saveStateToStorage = (state: AppState) => {
 };
 
 export default function AppLayout() {
-  const [appState, setAppState] = useState<AppState>({
-    currentMode: 'learning',
-    jobs: sampleJobs,
-    personas: defaultPersonas,
-    agentOpportunities: sampleAgentOpportunities,
-    googleSheetsConnected: false
-  });
+  const salesforceData = useSalesforceData();
+  const [currentMode, setCurrentMode] = useState<AppMode>('learning');
 
-  // Load saved state on component mount
+  // Combine local UI state with Salesforce data
+  const appState: AppState = {
+    currentMode,
+    jobs: salesforceData.authenticated ? salesforceData.jobs : sampleJobs,
+    personas: salesforceData.authenticated ? salesforceData.personas : defaultPersonas,
+    agentOpportunities: salesforceData.authenticated ? salesforceData.agentOpportunities : sampleAgentOpportunities
+  };
+
+  // Load saved mode from localStorage on component mount
   useEffect(() => {
     const savedState = loadStateFromStorage();
-    if (savedState) {
-      setAppState(prev => ({ ...prev, ...savedState }));
+    if (savedState && savedState.currentMode) {
+      setCurrentMode(savedState.currentMode);
     }
   }, []);
 
-  // Save state to localStorage whenever it changes
+  // Save mode to localStorage when it changes
   useEffect(() => {
-    saveStateToStorage(appState);
-  }, [appState]);
+    if (typeof window !== 'undefined') {
+      try {
+        const currentState = { currentMode };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
+      } catch (error) {
+        console.error('Failed to save mode to localStorage:', error);
+      }
+    }
+  }, [currentMode]);
 
   const handleModeChange = (mode: AppMode) => {
-    setAppState(prev => ({ ...prev, currentMode: mode }));
+    setCurrentMode(mode);
   };
 
   const updateAppState = (updates: Partial<AppState>) => {
-    setAppState(prev => {
-      const newState = { ...prev, ...updates };
-      return newState;
-    });
+    // Handle mode changes
+    if (updates.currentMode) {
+      setCurrentMode(updates.currentMode);
+    }
+
+    // For authenticated users, data updates go through Salesforce hooks
+    // For unauthenticated users, we just use sample data (read-only)
+    if (!salesforceData.authenticated) {
+      console.log('Not authenticated - using sample data');
+    }
   };
 
   const renderCurrentMode = () => {
+    // Show loading indicator when fetching Salesforce data
+    if (salesforceData.authenticated && salesforceData.loading) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 space-y-4">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <p className="text-gray-600">Loading your data from Salesforce...</p>
+        </div>
+      );
+    }
+
+    // Show error if there's a Salesforce error
+    if (salesforceData.error) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 space-y-4">
+          <div className="text-red-600 text-center">
+            <p className="font-medium">Error loading data from Salesforce</p>
+            <p className="text-sm">{salesforceData.error}</p>
+          </div>
+          <button
+            onClick={salesforceData.loadAllData}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
+
     const commonProps = {
       appState,
-      updateAppState
+      updateAppState,
+      salesforceData: salesforceData.authenticated ? salesforceData : null
     };
 
     switch (appState.currentMode) {
@@ -142,7 +189,11 @@ export default function AppLayout() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
+              {/* Salesforce Authentication */}
+              <SalesforceAuth />
+
+              {/* Current Mode Indicator */}
               <div className={`px-3 py-1 rounded-full text-sm font-medium text-white ${currentModeConfig.color}`}>
                 <div className="flex items-center space-x-1">
                   <currentModeConfig.icon className="w-4 h-4" />
@@ -196,10 +247,7 @@ export default function AppLayout() {
               <span>•</span>
               <span>Agents: {appState.agentOpportunities.length}</span>
               <span>•</span>
-              <div className={`flex items-center space-x-1 ${appState.googleSheetsConnected ? 'text-green-600' : 'text-gray-400'}`}>
-                <div className={`w-2 h-2 rounded-full ${appState.googleSheetsConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
-                <span>Google Sheets {appState.googleSheetsConnected ? 'Connected' : 'Disconnected'}</span>
-              </div>
+              <span className="text-gray-400">Salesforce Integration Active</span>
               {appState.currentMode === 'learning' && (
                 <>
                   <span>•</span>
