@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#1B4F72</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>JTBD Interactive Builder - Manage Jobs to be Done framework, personas, and agent opportunities</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <label>JTBD Builder</label>
+    <navType>Standard</navType>
+    <tabs>standard-home</tabs>
+    <tabs>JTBD_Job__c</tabs>
+    <tabs>JTBD_Persona__c</tabs>
+    <tabs>Agent_Opportunity__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>
