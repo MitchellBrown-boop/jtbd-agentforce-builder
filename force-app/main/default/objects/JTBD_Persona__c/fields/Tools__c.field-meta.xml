@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tools__c</fullName>
+    <label>Tools</label>
+    <description>Software, platforms, and tools this persona regularly uses to accomplish their work</description>
+    <inlineHelpText>List the key software, platforms, applications, or tools this persona uses daily or regularly. Include both primary and secondary tools.</inlineHelpText>
+    <length>32768</length>
+    <required>false</required>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

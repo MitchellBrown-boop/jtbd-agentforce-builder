@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Success_Metrics__c</fullName>
+    <description>Measurable outcomes that indicate successful completion of this job</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Define how success is measured for this job. Include quantitative metrics (time saved, accuracy improved) and qualitative indicators (satisfaction, confidence).</inlineHelpText>
+    <label>Success Metrics</label>
+    <length>32768</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

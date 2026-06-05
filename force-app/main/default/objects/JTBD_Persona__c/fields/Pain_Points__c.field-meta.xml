@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pain_Points__c</fullName>
+    <label>Pain Points</label>
+    <description>Common frustrations, challenges, or obstacles this persona faces in their day-to-day work</description>
+    <inlineHelpText>Document recurring challenges, frustrations, or obstacles this persona encounters. Focus on systemic issues that impact their job performance.</inlineHelpText>
+    <length>32768</length>
+    <required>false</required>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

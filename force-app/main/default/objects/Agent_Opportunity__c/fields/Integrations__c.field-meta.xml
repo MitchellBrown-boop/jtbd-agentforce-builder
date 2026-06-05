@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Integrations__c</fullName>
+    <label>Integrations</label>
+    <description>External systems, APIs, and third-party platforms this agent needs to integrate with</description>
+    <inlineHelpText>List the external systems, APIs, databases, or third-party platforms this agent would need to connect with to deliver its functionality.</inlineHelpText>
+    <length>32768</length>
+    <required>false</required>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

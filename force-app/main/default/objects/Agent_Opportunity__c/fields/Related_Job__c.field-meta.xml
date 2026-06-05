@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Related_Job__c</fullName>
+    <label>Related Job</label>
+    <description>Primary JTBD job that this agent opportunity addresses or automates</description>
+    <inlineHelpText>Select the main job this agent opportunity would help with. If this agent addresses multiple jobs, choose the primary one.</inlineHelpText>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>JTBD_Job__c</referenceTo>
+    <relationshipLabel>Agent Opportunities</relationshipLabel>
+    <relationshipName>Agent_Opportunities</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

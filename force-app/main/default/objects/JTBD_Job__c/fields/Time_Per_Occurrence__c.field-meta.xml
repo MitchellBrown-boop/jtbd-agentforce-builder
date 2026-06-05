@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Time_Per_Occurrence__c</fullName>
+    <description>Average time in minutes required to complete this job each time it occurs</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter the typical time in minutes needed to complete this job from start to finish.</inlineHelpText>
+    <label>Time Per Occurrence (Minutes)</label>
+    <precision>8</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

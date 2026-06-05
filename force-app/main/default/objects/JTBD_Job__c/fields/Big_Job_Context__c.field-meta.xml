@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Big_Job_Context__c</fullName>
+    <description>The larger emotional or social job that this job supports or contributes to</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Describe the higher-level emotional or social job that drives this need. What larger goal or aspiration does this job serve?</inlineHelpText>
+    <label>Big Job Context</label>
+    <length>32768</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

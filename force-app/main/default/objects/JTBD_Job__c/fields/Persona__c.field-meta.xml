@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Persona__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Reference to the persona who needs to get this job done</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Select the primary persona associated with this job. If the persona doesn&apos;t exist, create it first in the Personas section.</inlineHelpText>
+    <label>Persona</label>
+    <referenceTo>JTBD_Persona__c</referenceTo>
+    <relationshipLabel>Jobs</relationshipLabel>
+    <relationshipName>Jobs</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

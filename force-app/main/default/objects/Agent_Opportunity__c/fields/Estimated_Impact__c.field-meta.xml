@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Estimated_Impact__c</fullName>
+    <label>Estimated Impact</label>
+    <description>Expected business impact and value delivery from implementing this agent opportunity</description>
+    <inlineHelpText>Assess the potential impact on efficiency, user experience, cost savings, or revenue generation. Consider both quantitative and qualitative benefits.</inlineHelpText>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Transformational</fullName>
+                <default>false</default>
+                <label>Transformational</label>
+            </value>
+            <value>
+                <fullName>Significant</fullName>
+                <default>false</default>
+                <label>Significant</label>
+            </value>
+            <value>
+                <fullName>Moderate</fullName>
+                <default>true</default>
+                <label>Moderate</label>
+            </value>
+            <value>
+                <fullName>Minor</fullName>
+                <default>false</default>
+                <label>Minor</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

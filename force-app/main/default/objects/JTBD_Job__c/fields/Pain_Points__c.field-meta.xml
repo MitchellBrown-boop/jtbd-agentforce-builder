@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pain_Points__c</fullName>
+    <description>Specific frustrations and obstacles the persona faces when trying to accomplish this job</description>
+    <externalId>false</externalId>
+    <inlineHelpText>List the specific pain points, challenges, or frustrations. Use bullet points or separate lines for multiple pain points.</inlineHelpText>
+    <label>Pain Points</label>
+    <length>32768</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

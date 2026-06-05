@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Little_Job_Context__c</fullName>
+    <description>The functional job or process that this micro job is part of</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Describe the functional process or workflow that this job fits within. What larger functional job does this support?</inlineHelpText>
+    <label>Little Job Context</label>
+    <length>32768</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>
