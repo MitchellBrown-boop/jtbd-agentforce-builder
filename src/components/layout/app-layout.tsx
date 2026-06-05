@@ -10,9 +10,7 @@ import ModeNavigation from './mode-navigation';
 import LearningMode from '@/components/modes/learning-mode';
 import BuildingMode from '@/components/modes/building-mode';
 import PresentingMode from '@/components/modes/presenting-mode';
-import SalesforceAuth from '@/components/auth/salesforce-auth';
-import { useSalesforceData } from '@/hooks/useSalesforceData';
-import { Book, Wrench, Presentation, Loader2 } from 'lucide-react';
+import { Book, Wrench, Presentation } from 'lucide-react';
 
 const modeConfig = {
   learning: {
@@ -74,87 +72,81 @@ const saveStateToStorage = (state: AppState) => {
 };
 
 export default function AppLayout() {
-  const salesforceData = useSalesforceData();
-  const [currentMode, setCurrentMode] = useState<AppMode>('learning');
+  const [appState, setAppState] = useState<AppState>({
+    currentMode: 'learning',
+    jobs: sampleJobs,
+    personas: defaultPersonas,
+    agentOpportunities: sampleAgentOpportunities
+  });
 
-  // Combine local UI state with Salesforce data
-  const appState: AppState = {
-    currentMode,
-    jobs: salesforceData.authenticated ? salesforceData.jobs : sampleJobs,
-    personas: salesforceData.authenticated ? salesforceData.personas : defaultPersonas,
-    agentOpportunities: salesforceData.authenticated ? salesforceData.agentOpportunities : sampleAgentOpportunities
-  };
-
-  // Load saved mode from localStorage on component mount
+  // Load saved state on component mount
   useEffect(() => {
     const savedState = loadStateFromStorage();
-    if (savedState && savedState.currentMode) {
-      setCurrentMode(savedState.currentMode);
+    if (savedState) {
+      setAppState(prev => ({ ...prev, ...savedState }));
     }
   }, []);
 
-  // Save mode to localStorage when it changes
+  // Save state to localStorage whenever it changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const currentState = { currentMode };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
-      } catch (error) {
-        console.error('Failed to save mode to localStorage:', error);
-      }
-    }
-  }, [currentMode]);
+    saveStateToStorage(appState);
+  }, [appState]);
 
   const handleModeChange = (mode: AppMode) => {
-    setCurrentMode(mode);
+    setAppState(prev => ({ ...prev, currentMode: mode }));
   };
 
   const updateAppState = (updates: Partial<AppState>) => {
-    // Handle mode changes
-    if (updates.currentMode) {
-      setCurrentMode(updates.currentMode);
-    }
+    setAppState(prev => {
+      const newState = { ...prev, ...updates };
 
-    // For authenticated users, data updates go through Salesforce hooks
-    // For unauthenticated users, we just use sample data (read-only)
-    if (!salesforceData.authenticated) {
-      console.log('Not authenticated - using sample data');
+      // Auto-sync to Salesforce when data changes
+      if (updates.jobs || updates.personas || updates.agentOpportunities) {
+        syncToSalesforce(newState);
+      }
+
+      return newState;
+    });
+  };
+
+  // Background sync to Salesforce
+  const syncToSalesforce = async (state: AppState) => {
+    try {
+      // Only sync non-sample data
+      const realJobs = state.jobs.filter(job => !job.isSample);
+      const realPersonas = state.personas.filter(persona => !persona.isSample);
+      const realOpportunities = state.agentOpportunities.filter(opp => !opp.isSample);
+
+      if (realJobs.length > 0 || realPersonas.length > 0 || realOpportunities.length > 0) {
+        console.log('Syncing to Salesforce:', {
+          jobs: realJobs.length,
+          personas: realPersonas.length,
+          opportunities: realOpportunities.length
+        });
+
+        // Send to background sync endpoint
+        await fetch('/api/sync/salesforce', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jobs: realJobs,
+            personas: realPersonas,
+            agentOpportunities: realOpportunities,
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Background sync to Salesforce failed:', error);
+      // Don't interrupt user experience - sync failures are silent
     }
   };
 
   const renderCurrentMode = () => {
-    // Show loading indicator when fetching Salesforce data
-    if (salesforceData.authenticated && salesforceData.loading) {
-      return (
-        <div className="flex flex-col items-center justify-center py-16 space-y-4">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <p className="text-gray-600">Loading your data from Salesforce...</p>
-        </div>
-      );
-    }
-
-    // Show error if there's a Salesforce error
-    if (salesforceData.error) {
-      return (
-        <div className="flex flex-col items-center justify-center py-16 space-y-4">
-          <div className="text-red-600 text-center">
-            <p className="font-medium">Error loading data from Salesforce</p>
-            <p className="text-sm">{salesforceData.error}</p>
-          </div>
-          <button
-            onClick={salesforceData.loadAllData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Retry
-          </button>
-        </div>
-      );
-    }
-
     const commonProps = {
       appState,
-      updateAppState,
-      salesforceData: salesforceData.authenticated ? salesforceData : null
+      updateAppState
     };
 
     switch (appState.currentMode) {
@@ -189,11 +181,7 @@ export default function AppLayout() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-6">
-              {/* Salesforce Authentication */}
-              <SalesforceAuth />
-
-              {/* Current Mode Indicator */}
+            <div className="flex items-center space-x-4">
               <div className={`px-3 py-1 rounded-full text-sm font-medium text-white ${currentModeConfig.color}`}>
                 <div className="flex items-center space-x-1">
                   <currentModeConfig.icon className="w-4 h-4" />
@@ -247,7 +235,10 @@ export default function AppLayout() {
               <span>•</span>
               <span>Agents: {appState.agentOpportunities.length}</span>
               <span>•</span>
-              <span className="text-gray-400">Salesforce Integration Active</span>
+              <div className="flex items-center space-x-1 text-green-600">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span>Salesforce Sync Active</span>
+              </div>
               {appState.currentMode === 'learning' && (
                 <>
                   <span>•</span>
