@@ -1,4 +1,4 @@
-import { createSalesforceClient } from '../../../lib/salesforce/server-client';
+const { createSalesforceClient } = require('../../../lib/salesforce/server-client');
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
