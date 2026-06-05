@@ -1,8 +1,18 @@
-import { NextResponse } from 'next/server';
+// Salesforce sync endpoint - background data sync
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed - use POST' });
+  }
 
-// Simple Salesforce client using server credentials
-async function createSalesforceClient() {
   try {
+    const { jobs, personas, agentOpportunities } = req.body;
+
+    console.log('Syncing to Salesforce:', {
+      jobs: jobs?.length || 0,
+      personas: personas?.length || 0,
+      opportunities: agentOpportunities?.length || 0
+    });
+
     // Get access token using Client Credentials flow
     const tokenResponse = await fetch(`${process.env.SALESFORCE_INSTANCE_URL}/services/oauth2/token`, {
       method: 'POST',
@@ -18,13 +28,25 @@ async function createSalesforceClient() {
 
     if (!tokenResponse.ok) {
       const error = await tokenResponse.text();
-      throw new Error(`Token request failed: ${error}`);
+      console.error('Salesforce authentication failed:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Salesforce authentication failed',
+        message: error
+      });
     }
 
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
-    return {
+    const results = {
+      jobs: { created: 0, updated: 0, errors: [] },
+      personas: { created: 0, updated: 0, errors: [] },
+      agentOpportunities: { created: 0, updated: 0, errors: [] }
+    };
+
+    // Helper function to make Salesforce API calls
+    const salesforceApi = {
       query: async (soql) => {
         const response = await fetch(`${process.env.SALESFORCE_INSTANCE_URL}/services/data/v60.0/query?q=${encodeURIComponent(soql)}`, {
           headers: {
@@ -78,30 +100,6 @@ async function createSalesforceClient() {
         return response.status === 204 ? { success: true } : response.json();
       }
     };
-  } catch (error) {
-    console.error('Salesforce client creation failed:', error);
-    throw error;
-  }
-}
-
-export async function POST(request) {
-  try {
-    const { jobs, personas, agentOpportunities } = await request.json();
-
-    console.log('Syncing to Salesforce:', {
-      jobs: jobs?.length || 0,
-      personas: personas?.length || 0,
-      opportunities: agentOpportunities?.length || 0
-    });
-
-    // Create Salesforce client
-    const client = await createSalesforceClient();
-
-    const results = {
-      jobs: { created: 0, updated: 0, errors: [] },
-      personas: { created: 0, updated: 0, errors: [] },
-      agentOpportunities: { created: 0, updated: 0, errors: [] }
-    };
 
     // Sync Jobs
     if (jobs && jobs.length > 0) {
@@ -122,18 +120,18 @@ export async function POST(request) {
           };
 
           // Check if record already exists
-          const existingJobs = await client.query(
+          const existingJobs = await salesforceApi.query(
             `SELECT Id FROM JTBD_Job__c WHERE Name = '${job.statement.substring(0, 80).replace(/'/g, "\\'")}'`
           );
 
           if (existingJobs.records.length > 0) {
-            await client.update('JTBD_Job__c', {
+            await salesforceApi.update('JTBD_Job__c', {
               Id: existingJobs.records[0].Id,
               ...salesforceJob
             });
             results.jobs.updated++;
           } else {
-            await client.create('JTBD_Job__c', salesforceJob);
+            await salesforceApi.create('JTBD_Job__c', salesforceJob);
             results.jobs.created++;
           }
         } catch (error) {
@@ -157,18 +155,18 @@ export async function POST(request) {
             Goals__c: persona.goals ? persona.goals.join('\n') : ''
           };
 
-          const existingPersonas = await client.query(
+          const existingPersonas = await salesforceApi.query(
             `SELECT Id FROM JTBD_Persona__c WHERE Name = '${persona.name.replace(/'/g, "\\'")}'`
           );
 
           if (existingPersonas.records.length > 0) {
-            await client.update('JTBD_Persona__c', {
+            await salesforceApi.update('JTBD_Persona__c', {
               Id: existingPersonas.records[0].Id,
               ...salesforcePersona
             });
             results.personas.updated++;
           } else {
-            await client.create('JTBD_Persona__c', salesforcePersona);
+            await salesforceApi.create('JTBD_Persona__c', salesforcePersona);
             results.personas.created++;
           }
         } catch (error) {
@@ -191,18 +189,18 @@ export async function POST(request) {
             Integrations__c: opportunity.integrations ? opportunity.integrations.join('\n') : ''
           };
 
-          const existingOpportunities = await client.query(
+          const existingOpportunities = await salesforceApi.query(
             `SELECT Id FROM Agent_Opportunity__c WHERE Name = '${opportunity.name.replace(/'/g, "\\'")}'`
           );
 
           if (existingOpportunities.records.length > 0) {
-            await client.update('Agent_Opportunity__c', {
+            await salesforceApi.update('Agent_Opportunity__c', {
               Id: existingOpportunities.records[0].Id,
               ...salesforceOpportunity
             });
             results.agentOpportunities.updated++;
           } else {
-            await client.create('Agent_Opportunity__c', salesforceOpportunity);
+            await salesforceApi.create('Agent_Opportunity__c', salesforceOpportunity);
             results.agentOpportunities.created++;
           }
         } catch (error) {
@@ -214,7 +212,7 @@ export async function POST(request) {
 
     console.log('Salesforce sync completed:', results);
 
-    return NextResponse.json({
+    return res.status(200).json({
       success: true,
       message: 'Data synced to Salesforce successfully',
       results
@@ -222,16 +220,10 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Salesforce sync failed:', error);
-    return NextResponse.json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to sync to Salesforce',
       message: error.message
-    }, { status: 500 });
+    });
   }
-}
-
-export async function GET() {
-  return NextResponse.json({
-    error: 'Method not allowed - use POST'
-  }, { status: 405 });
 }
