@@ -89,15 +89,3 @@ export interface PresentationView {
   selectedJobs?: string[];
 }
 
-// Google Sheets Integration Types
-export interface SheetsConfig {
-  spreadsheetId: string;
-  worksheetName: string;
-  range: string;
-}
-
-export interface SheetsData {
-  jobs: any[][];
-  personas: any[][];
-  agents: any[][];
-}

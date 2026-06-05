@@ -8,7 +8,6 @@ export const customerConfig = {
   logoUrl: process.env.NEXT_PUBLIC_CUSTOMER_LOGO_URL || '/logo.png',
   primaryColor: process.env.NEXT_PUBLIC_BRAND_PRIMARY_COLOR || '#2563eb',
   secondaryColor: process.env.NEXT_PUBLIC_BRAND_SECONDARY_COLOR || '#64748b',
-  googleSheetsId: process.env.NEXT_PUBLIC_GOOGLE_SHEETS_ID || '',
   customDomain: process.env.NEXT_PUBLIC_CUSTOM_DOMAIN || 'jtbd-builder.vercel.app'
 };
 
