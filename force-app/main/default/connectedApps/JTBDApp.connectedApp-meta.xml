@@ -7,7 +7,7 @@
         <callbackUrl>https://algolia-jtbd.vercel.app/auth/callback</callbackUrl>
         <consumerKey>3MVG9dAEux2v1sLv_AFuTq1buY.mgEyDfXRjppBLwWaON0qup_iAgrqRDUFhPnvIrW5uE9FH4jD.7R8lgwJgc</consumerKey>
         <isAdminApproved>true</isAdminApproved>
-        <isClientCredentialEnabled>false</isClientCredentialEnabled>
+        <isClientCredentialEnabled>true</isClientCredentialEnabled>
         <isCodeCredentialEnabled>false</isCodeCredentialEnabled>
         <isCodeCredentialPostOnly>false</isCodeCredentialPostOnly>
         <isConsumerSecretOptional>true</isConsumerSecretOptional>

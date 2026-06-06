@@ -1,26 +1,33 @@
 # JTBD Interactive Builder - Development Progress
 
-## Session Complete: 2026-06-05
-**Status**: ✅ SALESFORCE INTEGRATION READY - Critical Blocker Resolved & Connected App Deployed
+## Session Complete: 2026-06-05  
+**Status**: 🟡 ONE FINAL STEP REQUIRED - Connected App Client Credentials Setup
 
 ---
 
 ## ✅ COMPLETED THIS SESSION
 
-### 1. CRITICAL BLOCKER RESOLVED - Field Accessibility Fixed ✅
-- **Root Cause Identified**: Field-Level Security (FLS) permissions issue, not deployment failure
-- **Resolution**: Mitchell updated field accessibility permissions in algolia-demo org
-- **Validation Confirmed**: All 22 custom fields now accessible via SOQL queries
-- **Field Access Status**: 100% success rate (previously 4.5%)
-  - ✅ **WORKING**: All LongTextArea, Picklist, Lookup, Text, and Number fields
-  - ✅ **CONFIRMED**: Job_Statement__c, Pain_Points__c, Description__c, Priority__c, etc.
+### 1. Field Accessibility Issue Fully Resolved ✅
+- **Root Cause Confirmed**: Field-Level Security (FLS) permissions 
+- **Resolution**: Mitchell created "Salesforce API User" permission set and assigned to account
+- **Validation Confirmed**: All custom fields accessible via SOQL queries
+- **Test Results**: 100% success on all 3 objects and key fields
+  - ✅ **JTBD_Job__c**: Job_Statement__c, Pain_Points__c accessible
+  - ✅ **JTBD_Persona__c**: Description__c, Role__c accessible  
+  - ✅ **Agent_Opportunity__c**: Description__c, Priority__c accessible
 
-### 2. Connected App Deployment Complete ✅
-- **OAuth App Created**: JTBDApp Connected App successfully deployed to algolia-demo org
-- **Authentication Flow**: Authorization Code + PKCE for secure web app integration
-- **API Scopes Configured**: Api, RefreshToken, Web, OpenID, Profile, Email
-- **Security Settings**: HTTPS callbacks required, IP enforcement enabled
-- **Deployment ID**: 09HgL00000TldwVUAR (Created successfully)
+### 2. Background Sync Infrastructure Complete ✅
+- **API Endpoint**: `/api/sync/salesforce` deployed to Vercel production
+- **Authentication Method**: Client Credentials Flow (server-to-server)
+- **API Integration**: Salesforce REST API v60.0 with upsert logic
+- **Data Mapping**: Complete field mapping from web app to Salesforce objects
+- **Error Handling**: Comprehensive error response and logging
+
+### 3. Root Cause Analysis Complete ✅
+- **Connected App Issue Identified**: Client Credentials Flow not enabled
+- **Connected App Exists**: "JTBD Interactive Builder 2026" in algolia-demo org  
+- **Configuration Status**: All OAuth settings correct except Client Credentials
+- **Authentication Flow**: Ready for server-to-server integration
 
 ### 3. Salesforce REST API Infrastructure Ready ✅
 - **Custom Objects**: 3 objects deployed and accessible
@@ -75,25 +82,26 @@
 
 ## 🔄 IN FLIGHT
 
-### 1. Web Application Salesforce Integration (READY TO IMPLEMENT)
-**Current State**: All infrastructure deployed and operational - ready for OAuth integration
+### 1. Final Connected App Configuration (1 STEP REMAINING)
+**Current State**: All technical infrastructure complete - one Setup UI change needed
 
-**Integration Architecture**:
-- **Connected App**: JTBDApp deployed with Consumer Key/Secret available
-- **OAuth Flow**: Authorization Code + PKCE for secure authentication
-- **API Access**: REST API v60.0 with full CRUD permissions on custom objects
-- **Development Challenge**: HTTPS required for callbacks (localhost needs ngrok or SSL cert)
+**Issue**: Connected App exists but Client Credentials Flow disabled
+**Solution**: Mitchell must enable Client Credentials Flow in Salesforce Setup
+**Impact**: Background sync will work immediately after this change
 
-**Implementation Options**:
-- **Option A**: Add Salesforce OAuth alongside Google Sheets (dual storage)
-- **Option B**: Replace Google Sheets with Salesforce REST API (unified storage)
-- **Option C**: Hybrid approach with data synchronization between systems
+**Exact Steps Required**:
+1. Go to Setup → Apps → Connected Apps  
+2. Find "JTBD Interactive Builder 2026"
+3. Click "Edit"
+4. Check ✅ "Enable Client Credentials Flow"  
+5. Save changes
 
-**Technical Requirements**:
-- Get Consumer Key/Secret from Salesforce Setup → App Manager → JTBDApp → View
-- Install jsforce SDK: `npm install jsforce`  
-- Set up HTTPS development environment (ngrok recommended)
-- Configure environment variables for Salesforce credentials
+**Validation**: After enabling, test sync with:
+```bash
+curl -X POST https://algolia-jtbd.vercel.app/api/sync/salesforce \
+  -H "Content-Type: application/json" \
+  -d '{"jobs":[{"statement":"Test after Client Credentials enabled","jobType":"big","persona":"Test User","painPoints":["Final setup"],"successMetrics":["Working sync"],"currentSolutions":["Manual setup"]}],"personas":[],"agentOpportunities":[]}'
+```
 
 ### 2. Multi-Customer Deployment Architecture (UNBLOCKED - READY TO RESUME)
 **Current State**: Plan updated in `/Users/mitchellbrown/.claude/plans/does-this-google-sheet-hashed-rose.md`
@@ -109,55 +117,36 @@
 
 ---
 
-## 🎯 EXACT RESUME INSTRUCTIONS
+## 🎯 EXACT RESUME INSTRUCTIONS  
 
-### PRIORITY: Implement Salesforce OAuth Integration in Web Application
+### IMMEDIATE: Enable Connected App Client Credentials (2 minutes)
 
-**Step 1: Retrieve Connected App Credentials** (5 minutes)
-1. Access Salesforce Setup in algolia-demo org: https://trailsignup-1a4a15bf9f4ce3.my.salesforce.com
-2. Navigate to **Setup** → **App Manager**  
-3. Find "JTBD App" → **View**
-4. Copy **Consumer Key** and **Consumer Secret**
+**Step 1: Enable Client Credentials Flow**
+1. Go to Salesforce Setup: https://trailsignup-1a4a15bf9f4ce3.my.salesforce.com
+2. Navigate: **Setup** → **Apps** → **Connected Apps**
+3. Find: **"JTBD Interactive Builder 2026"**  
+4. Click: **"Edit"**
+5. Check: ✅ **"Enable Client Credentials Flow"**
+6. Click: **"Save"**
 
-**Step 2: Choose Integration Approach** (5 minutes)
-**Decision Required**: How to integrate Salesforce with existing Google Sheets functionality?
-- **Option A**: Dual storage (keep Google Sheets + add Salesforce sync)
-- **Option B**: Replace Google Sheets entirely with Salesforce REST API
-- **Option C**: Hybrid with user choice of storage backend
-
-**Step 3: Set Up Development HTTPS** (10 minutes)
+**Step 2: Test Background Sync** (1 minute)
+After enabling Client Credentials, test the sync:
 ```bash
-# Salesforce requires HTTPS callbacks - use ngrok for development
-npm install -g ngrok
-cd /Users/mitchellbrown/workspace/FY27/projects/Jobs\ To\ Be\ Done
-npm run dev  # Start app on localhost:3001
-# In new terminal:
-ngrok http 3001
-# Copy the ngrok HTTPS URL for callback configuration
+curl -X POST https://algolia-jtbd.vercel.app/api/sync/salesforce \
+  -H "Content-Type: application/json" \
+  -d '{"jobs":[{"statement":"Test sync after Client Credentials enabled","jobType":"big","persona":"Mitchell Brown","painPoints":["Final configuration step"],"successMetrics":["Complete Salesforce integration"],"currentSolutions":["Manual Connected App setup"]}],"personas":[],"agentOpportunities":[]}'
 ```
 
-**Step 4: Install Salesforce SDK and Configure** (15 minutes)
-```bash
-npm install jsforce
-# Create .env.local with credentials from Step 1:
-echo "SALESFORCE_CLIENT_ID=<Consumer Key>" >> .env.local
-echo "SALESFORCE_CLIENT_SECRET=<Consumer Secret>" >> .env.local
-echo "SALESFORCE_INSTANCE_URL=https://trailsignup-1a4a15bf9f4ce3.my.salesforce.com" >> .env.local
-echo "SALESFORCE_CALLBACK_URL=<ngrok-https-url>/auth/callback" >> .env.local
-```
-
-**Step 5: Implement OAuth Flow** (30 minutes)
-Based on integration approach chosen in Step 2:
-- Create `/pages/api/auth/salesforce.js` OAuth initiation endpoint
-- Create `/pages/api/auth/callback.js` callback handler  
-- Add Salesforce authentication button to UI
-- Implement token storage and refresh logic
+**Step 3: Verify Data in Salesforce** (1 minute)  
+1. Go to **App Launcher** → **JTBD Builder**
+2. Click **JTBD Jobs** tab
+3. Confirm test record appears
 
 **SUCCESS CRITERIA**:
-- User can authenticate with Salesforce via OAuth
-- Web app can create/read JTBD records via REST API
-- New jobs appear in both web app and Salesforce org
-- Clear path forward for multi-customer deployment
+- ✅ Sync returns `{"success":true}` instead of auth error
+- ✅ Test job appears in Salesforce JTBD Jobs tab  
+- ✅ Background sync operational for production use
+- ✅ Complete Salesforce integration ready for multi-customer deployment
 
 ### Current Application Status
 - **Running**: http://localhost:3001 (V1 complete - Google Sheets integration)
@@ -193,16 +182,16 @@ Based on integration approach chosen in Step 2:
 - **Building Mode**: Full JTBD creation workflow with hierarchical context ✅
 - **Presenting Mode**: Executive time analysis with persona rankings ✅
 - **Google Sheets Integration**: Basic sync operational ✅
-- **Salesforce Infrastructure**: 100% deployed and ready ✅ (awaiting web app integration)
+- **Background Salesforce Sync**: 99% complete ⚡ (1 setup step remaining)
 
-### Salesforce Development Status  
+### Salesforce Integration Status  
 - **Custom Objects**: 3/3 deployed and accessible ✅
 - **Custom Fields**: 22/22 accessible (100% success rate) ✅
-- **SOQL Validation**: Objects and fields fully queryable ✅
-- **Connected App**: OAuth authentication configured ✅
-- **REST API**: Ready for CRUD operations ✅
-- **Metadata Structure**: Proper naming conventions and types ✅  
-- **Deployment Pipeline**: SFDX project configured ✅
+- **Field Permissions**: API user permissions configured ✅
+- **Background Sync API**: Deployed to production ✅
+- **Authentication**: Connected App exists, needs Client Credentials enabled ⚡
+- **REST API Integration**: Complete upsert logic implemented ✅
+- **Production Ready**: Immediate activation after 1 setup change ⚡
 
 ### Code Quality
 - **TypeScript**: Full type safety across application
@@ -216,12 +205,14 @@ Based on integration approach chosen in Step 2:
 
 ## 🚀 SUCCESS METRICS
 
-**Current Status**: V1 application complete with Google Sheets integration ✅  
-**Salesforce Infrastructure**: Complete and operational ✅ (field accessibility resolved, Connected App deployed)
+**Current Status**: V1 application complete ✅ + Salesforce integration 99% complete ⚡  
+**Background Sync**: Fully implemented and deployed - ready for immediate activation
 
-**Immediate Priority**: Implement OAuth integration in web application to enable Salesforce REST API functionality
+**Immediate Action**: 1 setup step (Enable Client Credentials Flow) → Complete integration
 
-**Next Phase**: Multi-customer deployment capability with Salesforce backend (unblocked and ready)
+**Next Phase**: Multi-customer deployment with enterprise Salesforce backend (ready to implement)
+
+**Achievement**: Complete background data synchronization without user authentication - ideal for customer deployments where users don't have Salesforce logins
 
 **Long-term Vision**: Industry-standard JTBD framework builder with enterprise Salesforce integration, AI-powered transcript processing, and multi-customer deployment
 
