@@ -187,6 +187,12 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     setActiveView('overview');
   };
 
+  const handleDeleteJob = (jobId: string) => {
+    updateAppState({
+      jobs: appState.jobs.filter(job => job.id !== jobId)
+    });
+  };
+
   const handleArrayFieldChange = (
     field: 'painPoints' | 'successMetrics' | 'currentSolutions',
     index: number,
@@ -445,7 +451,10 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
                     >
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="p-2 text-gray-400 hover:text-red-600">
+                    <button
+                      onClick={() => handleDeleteJob(job.id)}
+                      className="p-2 text-gray-400 hover:text-red-600"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
