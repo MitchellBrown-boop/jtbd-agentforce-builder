@@ -193,6 +193,18 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
     });
   };
 
+  const handleDeletePersona = (personaId: string) => {
+    updateAppState({
+      personas: appState.personas.filter(persona => persona.id !== personaId),
+      jobs: appState.jobs.filter(job => job.persona !== personaId) // Also remove jobs assigned to this persona
+    });
+    // If we're currently viewing this persona, go back to overview
+    if (selectedPersona === personaId) {
+      setSelectedPersona(null);
+      setActiveView('overview');
+    }
+  };
+
   const handleArrayFieldChange = (
     field: 'painPoints' | 'successMetrics' | 'currentSolutions',
     index: number,
@@ -1225,7 +1237,29 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
             <span>Back to Framework</span>
           </button>
 
-          <div className="bg-white rounded-lg border p-8">
+          <div className="bg-white rounded-lg border p-8 relative">
+            {/* Edit/Delete buttons */}
+            <div className="absolute top-6 right-6 flex items-center space-x-2">
+              <button
+                onClick={() => {
+                  // TODO: Add edit persona functionality
+                }}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
+                <Edit className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {
+                  if (confirm(`Are you sure you want to delete ${persona.name}? This will also delete all associated jobs.`)) {
+                    handleDeletePersona(persona.id);
+                  }
+                }}
+                className="p-2 text-gray-400 hover:text-red-600"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+
             <div className="flex items-start space-x-6">
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
                 <User className="w-8 h-8 text-white" />
@@ -1445,7 +1479,7 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
                 setSelectedPersona(persona.id);
                 setActiveView('persona-detail');
               }}
-              className="bg-white rounded-lg border p-6 hover:shadow-lg transition-shadow cursor-pointer relative"
+              className="bg-white rounded-lg border p-6 hover:shadow-lg transition-shadow cursor-pointer relative group"
             >
               {isExample && (
                 <div className="absolute top-4 right-4">
@@ -1489,6 +1523,30 @@ export default function BuildingMode({ appState, updateAppState }: BuildingModeP
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Edit/Delete buttons */}
+              <div className="absolute top-4 right-4 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // TODO: Add edit persona functionality
+                  }}
+                  className="p-1 text-gray-400 hover:text-gray-600 bg-white rounded shadow-sm"
+                >
+                  <Edit className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Are you sure you want to delete ${persona.name}? This will also delete all associated jobs.`)) {
+                      handleDeletePersona(persona.id);
+                    }
+                  }}
+                  className="p-1 text-gray-400 hover:text-red-600 bg-white rounded shadow-sm"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
               </div>
             </div>
           );
